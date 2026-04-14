@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String       @id @default(uuid())
+  email    String       @unique
+  password String
+  username String       @unique
+  teams    TeamMember[]
+  assignedTasks Task[]
+  chatParticipations ChatParticipant[]
+  messagesSent       Message[]
+  chatsCreated       Chat[]            @relation("ChatCreator")
+
+  @@map("users")
+}
+
+model Team {
+  id        String       @id @default(uuid())
+  name      String
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+  boards    Board[]
+  members   TeamMember[]
+  tasks     Task[]
+  chats     Chat[]
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  teamId    String   @map("team_id")
+  role      Role     @default(MEMBER)
+  joinedAt  DateTime @default(now()) @map("joined_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+  @@map("team_members")
+}
+
+model Board {
+  id        String   @id @default(uuid())
+  name      String
+  teamId    String
+  tasks     Task[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@map("boards")
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  assignedTo  String?  @map("assigned_to")
+  boardId     String?  @map("board_id")
+  teamId      String   @map("team_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  order       Int?      
+  board       Board?   @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  assigned    User?    @relation(fields: [assignedTo], references: [id], onDelete: Cascade)
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  priority    Priority?
+
+  @@map("tasks")
+}
+
+model Chat {
+  id          String   @id @default(uuid())
+  teamId      String   @map("team_id")
+  type        ChatType
+  name        String?
+  createdById String   @map("created_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  createdBy   User     @relation("ChatCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  participants ChatParticipant[]
+  messages    Message[]
+
+  @@index([teamId])
+  @@map("chats")
+}
+
+model ChatParticipant {
+  id         String   @id @default(uuid())
+  chatId     String   @map("chat_id")
+  userId     String   @map("user_id")
+  lastReadAt DateTime @default(now()) @map("last_read_at")
+  joinedAt   DateTime @default(now()) @map("joined_at")
+
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([chatId, userId])
+  @@index([userId])
+  @@map("chat_participants")
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  chatId    String   @map("chat_id")
+  authorId  String   @map("author_id")
+  body      String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  chat        Chat                @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  author      User                @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  attachments MessageAttachment[]
+
+  @@index([chatId, createdAt])
+  @@map("messages")
+}
+
+model MessageAttachment {
+  id               String @id @default(uuid())
+  messageId        String @map("message_id")
+  storedFileName   String @map("stored_file_name")
+  originalFileName String @map("original_file_name")
+  mimeType         String @map("mime_type")
+  sizeBytes        Int    @map("size_bytes")
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@map("message_attachments")
+}
+
+enum ChatType {
+  DIRECT
+  GROUP
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum TaskStatus {
+  BACKLOG
+  TODO
+  IN_PROGRESS
+  REVIEW
+  TESTING
+  DONE
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}

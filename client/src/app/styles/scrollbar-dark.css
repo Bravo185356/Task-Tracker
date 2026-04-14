@@ -1,0 +1,116 @@
+* {
+	scrollbar-color: #575a61 #27272a;
+	scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+	width: 12px;
+	height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+	background: #1a202c;
+	border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+	background: #4a5568;
+	border: 2px solid #1a202c;
+	border-radius: 10px;
+	transition: background 0.2s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+	background: #5a6778;
+}
+
+*::-webkit-scrollbar-thumb:active {
+	background: #6a7788;
+}
+
+*::-webkit-scrollbar-horizontal {
+	height: 12px;
+}
+
+*::-webkit-scrollbar-corner {
+	background: #1a202c;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+	background: #4a5568;
+	border: none;
+	border-radius: 3px;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+}
+
+.scrollbar-hidden:hover::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+.kanban-board::-webkit-scrollbar {
+	height: 10px;
+}
+
+.kanban-board::-webkit-scrollbar-track {
+	margin: 0 10px;
+	background: rgba(26, 32, 44, .5);
+	border-radius: 5px;
+}
+
+.kanban-board::-webkit-scrollbar-thumb {
+	background: #4a5568;
+	border: 2px solid rgba(26, 32, 44, .5);
+	border-radius: 5px;
+}
+
+.kanban-board::-webkit-scrollbar-thumb:hover {
+	background: #5a6778;
+}
+
+.kanban-column::-webkit-scrollbar {
+	width: 8px;
+}
+
+.kanban-column::-webkit-scrollbar-track {
+	margin: 5px 0;
+	background: rgba(26, 32, 44, .3);
+	border-radius: 4px;
+}
+
+.kanban-column::-webkit-scrollbar-thumb {
+	background: #4a5568;
+	border-radius: 4px;
+}
+
+.kanban-column::-webkit-scrollbar-thumb:hover {
+	background: #5a6778;
+}
+
+.scrollbar-accent::-webkit-scrollbar-thumb {
+	background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+	border: none;
+}
+
+.scrollbar-accent::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(180deg, #7c8ff0 0%, #8a5bb5 100%);
+}
+
+.scrollbar-glow::-webkit-scrollbar-thumb {
+	background: #667eea;
+	box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+}
+
+.scrollbar-glow::-webkit-scrollbar-thumb:hover {
+	background: #7c8ff0;
+	box-shadow: 0 0 15px rgba(102, 126, 234, 0.7);
+}
