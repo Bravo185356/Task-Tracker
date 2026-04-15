@@ -5,7 +5,7 @@
 				{{ chatName }}
 			</span>
 		</div>
-		<div v-if="!isLoading" ref="messagesScrollEl" class="min-h-0 min-w-0 flex-1 overflow-y-auto">
+		<div v-if="!isLoading" ref="messagesScrollEl" class="min-h-0 min-w-0 flex-1 overflow-y-auto" @scroll.passive="handleScrollEvent">
 			<div class="flex flex-col gap-4 p-4">
 				<div
 					v-for="message in messages"
@@ -22,14 +22,14 @@
 								<div v-if="attachment.id.startsWith('temp-')">
 									<ProgressSpinner class="w-4 h-4" />
 								</div>
-								<img
-									v-else-if="attachment.mimeType.startsWith('image/')"
-									:src="getAttachmentUrl(attachment.url)"
-									:alt="attachment.originalFileName"
-									class="max-w-[200px] max-h-[200px] rounded-lg object-cover cursor-pointer"
-									@click="openAttachment(attachment.url)"
-									@load="scrollMessagesToBottom"
-								/>
+							<img
+								v-else-if="attachment.mimeType.startsWith('image/')"
+								:src="getAttachmentUrl(attachment.url)"
+								:alt="attachment.originalFileName"
+								class="max-w-[200px] max-h-[200px] rounded-lg object-cover cursor-pointer"
+								@click="openAttachment(attachment.url)"
+								@load="handleScrollToBottom"
+							/>
 								<a
 									v-else
 									:href="getAttachmentUrl(attachment.url)"
@@ -155,10 +155,12 @@ const queryClient = useQueryClient();
 
 const teamId = route.params.teamId as string;
 const chatId = route.params.chatId as string;
+let resizeObserver: ResizeObserver | null = null;
 
 const messageText = ref('');
 const showFirstMessage = ref('');
 const messagesScrollEl = ref<HTMLDivElement | null>(null);
+const autoScroll = ref(true);
 
 const chatName = computed(() => {
 	const chats = queryClient.getQueryData<Chat[]>(['chats', teamId]);
@@ -180,22 +182,67 @@ const getAttachmentUrl = (url: string) => {
 
 const openAttachment = (url: string) => window.open(getAttachmentUrl(url), '_blank');
 
-const scrollMessagesToBottom = () => {
+const isNearBottom = () => {
 	const el = messagesScrollEl.value;
-	if (!el) return;
-	requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; });
+	
+	if (!el) {
+		return true
+	};
+	
+	return el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+};
+
+const scrollToBottom = () => {
+	const el = messagesScrollEl.value;
+	
+	if (!el) {
+		return
+	};
+	
+	el.scrollTop = el.scrollHeight;
+};
+
+const handleScrollToBottom = () => {
+	if (autoScroll.value) {
+		scrollToBottom();
+	};
+};
+
+const handleScrollEvent = () => {
+	autoScroll.value = isNearBottom();
+};
+
+const resetResizeObserver = () => {
+	resizeObserver?.disconnect();
+	resizeObserver = null;
+};
+
+const attachResizeObserver = () => {
+	resetResizeObserver();
+	const el = messagesScrollEl.value;
+	
+	if (!el) {
+		return
+	};
+	
+	resizeObserver = new ResizeObserver(handleScrollToBottom);
+	resizeObserver.observe(el.firstElementChild as Element);
 };
 
 watch(() => props.isLoading, async (isLoading) => {
-	if (!isLoading) {
-		await nextTick();
-		scrollMessagesToBottom();
+	if (isLoading) {
+		resetResizeObserver();
+		return;
 	}
+	
+	autoScroll.value = true;
+	await nextTick();
+	scrollToBottom();
+	attachResizeObserver();
 });
 
 watch(() => props.messages, async () => {
-	await nextTick();
-	scrollMessagesToBottom();
+	handleScrollToBottom();
 }, { deep: true, flush: 'post' });
 
 const handleSendMessage = () => {
@@ -221,5 +268,6 @@ const handleSendMessage = () => {
 
 onUnmounted(() => {
 	clearFiles();
+	resetResizeObserver();
 });
 </script>
