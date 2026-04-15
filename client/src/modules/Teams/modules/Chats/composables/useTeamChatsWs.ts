@@ -31,15 +31,16 @@ export function useTeamChatsWs(teamId: MaybeRefOrGetter<string>) {
 			};
 			
 			const authorName = team.value?.members.find((member) => member.userId === chatUpdate.message.authorId)?.username;
-			
-			toast.add({
-				severity: 'info',
-				summary: 'New message',
-				detail: `New message from ${authorName}`,
-				life: 4000,
-			});
-			
 			const isChatOpen = route.params.chatId === chatUpdate.chatId;
+			
+			if(!isChatOpen) {				
+				toast.add({
+					severity: 'info',
+					summary: 'New message',
+					detail: `New message from ${authorName}`,
+					life: 4000,
+				});
+			}
 			
 			return old.map((chat) => {
 				if (chat.id !== chatUpdate.chatId) {

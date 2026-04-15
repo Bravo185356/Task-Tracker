@@ -152,8 +152,9 @@
 
 <script setup lang="ts">
 import type { Message, Chat, Team } from '@/shared/types/entities';
-import { ref, watch, nextTick, onUnmounted, computed } from 'vue';
+import { ref, computed, toRef, onUnmounted } from 'vue';
 import { useFileUpload } from '@/shared/composables/useFileUpload';
+import { useChatScroll } from '../composables/useChatScroll';
 import { API_URL } from '@/app/config/api';
 import { useRoute } from 'vue-router';
 import { useQueryClient } from '@tanstack/vue-query';
@@ -178,13 +179,16 @@ const queryClient = useQueryClient();
 
 const teamId = route.params.teamId as string;
 const chatId = route.params.chatId as string;
-let resizeObserver: ResizeObserver | null = null;
 
 const messageText = ref('');
 const showFirstMessage = ref('');
-const messagesScrollEl = ref<HTMLDivElement | null>(null);
-const autoScroll = ref(true);
-const newMessagesCount = ref(0);
+
+const { 
+	newMessagesCount, 
+	handleScrollEvent, 
+	handleScrollToBottom, 
+	scrollToBottomAndReset 
+} = useChatScroll(toRef(props, 'messages'), toRef(props, 'isLoading'));
 
 const chatName = computed(() => {
 	const chats = queryClient.getQueryData<Chat[]>(['chats', teamId]);
@@ -199,91 +203,10 @@ const chatName = computed(() => {
 		return team?.members.find((member) => member.userId === props.currentUserId)?.username;
 	}
 });
-	
-const getAttachmentUrl = (url: string) => {
-	return `${API_URL}${url}`;
-};
+
+const getAttachmentUrl = (url: string) => `${API_URL}${url}`;
 
 const openAttachment = (url: string) => window.open(getAttachmentUrl(url), '_blank');
-
-const isNearBottom = () => {
-	const el = messagesScrollEl.value;
-	
-	if (!el) {
-		return true
-	};
-	
-	return el.scrollHeight - el.scrollTop - el.clientHeight < 120;
-};
-
-const scrollToBottom = () => {
-	const el = messagesScrollEl.value;
-	
-	if (!el) {
-		return
-	};
-	
-	el.scrollTop = el.scrollHeight;
-};
-
-const handleScrollToBottom = () => {
-	if (autoScroll.value) {
-		scrollToBottom();
-	};
-};
-
-const handleScrollEvent = () => {
-	autoScroll.value = isNearBottom();	
-	if (autoScroll.value) {
-		newMessagesCount.value = 0
-	};
-};
-
-const scrollToBottomAndReset = () => {
-	newMessagesCount.value = 0;
-	autoScroll.value = true;
-	scrollToBottom();
-};
-
-const resetResizeObserver = () => {
-	resizeObserver?.disconnect();
-	resizeObserver = null;
-};
-
-const attachResizeObserver = () => {
-	resetResizeObserver();
-	const el = messagesScrollEl.value;
-	
-	if (!el) {
-		return
-	};
-	
-	resizeObserver = new ResizeObserver(handleScrollToBottom);
-	resizeObserver.observe(el.firstElementChild as Element);
-};
-
-watch(() => props.isLoading, async (isLoading) => {
-	if (isLoading) {
-		resetResizeObserver();
-		newMessagesCount.value = 0;
-		return;
-	}
-	
-	autoScroll.value = true;
-	await nextTick();
-	scrollToBottom();
-	attachResizeObserver();
-});
-
-watch(() => props.messages, (messages, oldMessages) => {
-	const newCount = messages.length - oldMessages.length;
-	
-	if (newCount > 0 && !autoScroll.value && oldMessages.length > 0) {
-		newMessagesCount.value += newCount;
-	}
-	
-	handleScrollToBottom();
-}, { deep: true, flush: 'post' });
 
 const handleSendMessage = () => {
 	const hasText = messageText.value.trim().length;
@@ -308,6 +231,5 @@ const handleSendMessage = () => {
 
 onUnmounted(() => {
 	clearFiles();
-	resetResizeObserver();
 });
 </script>
