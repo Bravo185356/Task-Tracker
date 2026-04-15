@@ -5,7 +5,30 @@
 				{{ chatName }}
 			</span>
 		</div>
-		<div v-if="!isLoading" ref="messagesScrollEl" class="min-h-0 min-w-0 flex-1 overflow-y-auto" @scroll.passive="handleScrollEvent">
+		<div 
+			v-if="!isLoading" 
+			ref="messagesScrollEl" 
+			class="relative min-h-0 min-w-0 flex-1 overflow-y-auto" 
+			@scroll.passive="handleScrollEvent"
+		>
+			<Transition
+				enter-active-class="transition-all duration-200"
+				enter-from-class="opacity-0 -translate-y-2"
+				enter-to-class="opacity-100 translate-y-0"
+				leave-active-class="transition-all duration-150"
+				leave-from-class="opacity-100 translate-y-0"
+				leave-to-class="opacity-0 -translate-y-2"
+			>
+				<div v-if="newMessagesCount > 0" class="sticky top-3 z-10 flex justify-center">
+					<Button
+						icon="pi pi-arrow-down"
+						:label="newMessagesCount === 1 ? 'New message' : `${newMessagesCount} New messages`"
+						size="small"
+						rounded
+						@click="scrollToBottomAndReset"
+					/>
+				</div>
+			</Transition>
 			<div class="flex flex-col gap-4 p-4">
 				<div
 					v-for="message in messages"
@@ -161,6 +184,7 @@ const messageText = ref('');
 const showFirstMessage = ref('');
 const messagesScrollEl = ref<HTMLDivElement | null>(null);
 const autoScroll = ref(true);
+const newMessagesCount = ref(0);
 
 const chatName = computed(() => {
 	const chats = queryClient.getQueryData<Chat[]>(['chats', teamId]);
@@ -209,7 +233,16 @@ const handleScrollToBottom = () => {
 };
 
 const handleScrollEvent = () => {
-	autoScroll.value = isNearBottom();
+	autoScroll.value = isNearBottom();	
+	if (autoScroll.value) {
+		newMessagesCount.value = 0
+	};
+};
+
+const scrollToBottomAndReset = () => {
+	newMessagesCount.value = 0;
+	autoScroll.value = true;
+	scrollToBottom();
 };
 
 const resetResizeObserver = () => {
@@ -232,6 +265,7 @@ const attachResizeObserver = () => {
 watch(() => props.isLoading, async (isLoading) => {
 	if (isLoading) {
 		resetResizeObserver();
+		newMessagesCount.value = 0;
 		return;
 	}
 	
@@ -241,7 +275,13 @@ watch(() => props.isLoading, async (isLoading) => {
 	attachResizeObserver();
 });
 
-watch(() => props.messages, async () => {
+watch(() => props.messages, (messages, oldMessages) => {
+	const newCount = messages.length - oldMessages.length;
+	
+	if (newCount > 0 && !autoScroll.value && oldMessages.length > 0) {
+		newMessagesCount.value += newCount;
+	}
+	
 	handleScrollToBottom();
 }, { deep: true, flush: 'post' });
 
