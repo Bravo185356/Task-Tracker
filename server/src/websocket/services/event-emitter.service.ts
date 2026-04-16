@@ -41,17 +41,6 @@ export class EventEmitterService {
 		this.logger.log(`Task ${taskId} deleted`);
 	}
 
-	// emitTaskMoved(data: TaskMovedDto): void {
-	// 	this.server.to(`board:${data.boardId}`).emit('board:task:moved', {
-	// 		taskId: data.taskId,
-	// 		fromColumn: data.fromColumn,
-	// 		toColumn: data.toColumn,
-	// 		order: data.order,
-	// 	});
-		
-	// 	this.logger.log(`Task ${data.taskId} moved: ${data.fromColumn} → ${data.toColumn}`);
-	// }
-
 	emitRoomUsers(roomName: string, users: string[]): void {
 		this.server.to(roomName).emit('room:users', {
 			room: roomName,
@@ -60,7 +49,7 @@ export class EventEmitterService {
 		});
 	}
 
-	broadcastToRoom(room: string, event: string, data: any): void {
+	broadcastToRoom(room: string, event: string, data: Record<string, unknown>): void {
 		this.server.to(room).emit(event, data);
 	}
 

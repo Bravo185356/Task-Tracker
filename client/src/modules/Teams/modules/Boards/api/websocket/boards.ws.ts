@@ -13,7 +13,4 @@ export const boardWs = {
 
   onTaskDeleted: (callback: (data: { id: string }) => void) => ws.on('board:task:deleted', callback),
   offTaskDeleted: (callback: (data: { id: string }) => void) => ws.off('board:task:deleted', callback),
-
-  onTaskMoved: (callback: (data: any) => void) => ws.on('board:task:moved', callback),
-  offTaskMoved: (callback: (data: any) => void) => ws.off('board:task:moved', callback),
 };

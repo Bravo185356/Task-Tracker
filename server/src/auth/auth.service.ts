@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { ConfigService } from '@nestjs/config';
@@ -22,7 +23,7 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
+  async validateUser(username: string, password: string): Promise<Omit<User, 'password'> | null> {
     const user = await this.usersService.findUserByLoginCredential(username);
     if (user && (await bcrypt.compare(password, user.password))) {
       const { password, ...result } = user;
