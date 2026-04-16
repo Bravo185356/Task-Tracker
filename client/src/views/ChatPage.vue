@@ -43,6 +43,7 @@
 					:messages="chatDetails?.messages ?? []"
 					:is-loading="isFetching"
 					:current-user-id="authStore.user!.id"
+					:first-message="firstMessage"
 					@send-message="handleSendMessage"
 				/>
 			</div>
@@ -53,7 +54,7 @@
 
 <script setup lang="ts">
 import type { Chat } from '@/shared/types/entities';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import { ChatsAPI, useChatWs, type CreateChatRequest, ChatList, ChatConversation } from '@/modules/Teams';
@@ -74,6 +75,7 @@ const toast = useToast();
 const chatId = computed(() => route.params.chatId as string);
 const userId = computed(() => route.params.userId as string);
 const isChatExist = computed(() => !userId.value);
+const firstMessage = ref('');
 
 const teamId = route.params.teamId as string;
 
@@ -107,12 +109,14 @@ const { mutate: createChat } = useMutation({
 });
 
 const handleSendMessage = (payload: { message: string; files?: File[] }) => {
-	if (!isChatExist.value) {	
+	if (!isChatExist.value) {
+		firstMessage.value = payload.message;
 		createChat(
 			{ type: 'DIRECT', otherUserId: userId.value },
 			{
 				onSuccess: (data: Chat) => {
 					createMessage({ chatId: data.id, message: payload.message, files: payload.files });
+					firstMessage.value = '';
 				},
 			},
 		);

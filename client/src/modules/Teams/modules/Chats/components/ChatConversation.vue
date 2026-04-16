@@ -71,11 +71,11 @@
 					</div>
 				</div>
 				<div 
-					v-if="showFirstMessage && !messages.length" 
+					v-if="firstMessage && !messages.length" 
 					class="flex items-center gap-2 max-md:self-end bg-zinc-500/50 max-md:max-w-[65%] max-md:self-end md:self-start border-1 border-zinc-700/50 rounded-lg p-3 text-sm"
 				>
 					<span class="text-sm break-all">
-						{{ showFirstMessage }}
+						{{ firstMessage }}
 					</span>
 					<ProgressSpinner class="!w-[16px] !h-[16px]" />
 				</div>
@@ -167,6 +167,7 @@ const props = defineProps<{
 	messages: Message[];
 	currentUserId: string;
 	isLoading: boolean;
+	firstMessage?: string;
 }>();
 
 const emit = defineEmits<{
@@ -181,9 +182,9 @@ const teamId = route.params.teamId as string;
 const chatId = route.params.chatId as string;
 
 const messageText = ref('');
-const showFirstMessage = ref('');
 
 const { 
+	messagesScrollEl,
 	newMessagesCount, 
 	handleScrollEvent, 
 	handleScrollToBottom, 
@@ -215,10 +216,6 @@ const handleSendMessage = () => {
 	if (!hasText && !hasFiles) {
 		return
 	};
-	
-	if(route.params.userId) {
-		showFirstMessage.value = messageText.value;
-	} 
 	
 	emit('sendMessage', {
 		message: messageText.value,
