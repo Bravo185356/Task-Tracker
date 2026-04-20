@@ -30,7 +30,10 @@
 						<div class="space-y-6">
 							<div>
 								<InputText
-									v-model="title"
+									:model-value="title"
+									@update:model-value="setTitle($event ?? '')"
+									@focus="isTitleFocused = true"
+									@blur="isTitleFocused = false"
 									class="w-full text-3xl font-bold text-white mb-2 tracking-tight leading-tight"
 								/>
 								<div class="flex items-center gap-4 text-sm text-zinc-400">
@@ -54,7 +57,10 @@
 								</div>
 								<div class="prose prose-invert max-w-none">
 									<Textarea
-										v-model="description"
+										:model-value="description"
+										@update:model-value="setDescription"
+										@focus="isDescriptionFocused = true"
+										@blur="isDescriptionFocused = false"
 										rows="6"
 										auto-resize
 										fluid
@@ -213,9 +219,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick } from 'vue';
+import type { Task } from '@/shared/types/entities';
+import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useQuery } from '@tanstack/vue-query';
+import { useQuery, useMutation } from '@tanstack/vue-query';
 import { TaskDetails, taskStatuses, useTaskDetailsWs, TasksAPI } from '@/modules/Teams';
 import { useDebouncedField } from '@/shared/composables/useDebouncedField';
 import { useToast } from 'primevue/usetoast';
@@ -235,31 +242,47 @@ const router = useRouter();
 const teamId = route.params.teamId as string;
 const taskId = route.params.taskId as string;
 
+const title = ref('');
+const description = ref('');
+const isTitleFocused = ref(false);
+const isDescriptionFocused = ref(false);
+
 useTaskDetailsWs(taskId);
 
-const { value: title, setValue: setTitle, clearTimer: clearTitleTimer } = useDebouncedField({
-	onUpdate: (newTitle) => TasksAPI.patchTask(taskId, { title: newTitle }),
+const { mutate: patchTask } = useMutation({
+	mutationFn: (data: Partial<Task>) => TasksAPI.patchTask(taskId, data),
 });
 
-const { value: description, setValue: setDescription, clearTimer: clearDescriptionTimer } = useDebouncedField({
-	onUpdate: (newDescription) => TasksAPI.patchTask(taskId, { description: newDescription }),
+const { setValue: setTitle } = useDebouncedField({
+	onUpdate: (newTitle) => {
+		title.value = newTitle;
+		patchTask({ title: newTitle });
+	},
+});
+
+const { setValue: setDescription } = useDebouncedField({
+	onUpdate: (newDescription) => {
+		description.value = newDescription;
+		patchTask({ description: newDescription });
+	},
 });
 
 const { data: task, isLoading } = useQuery({
 	queryKey: ['task', taskId],
 	queryFn: () => TasksAPI.getTaskById(taskId),
-	select: (data) => {
-		clearTitleTimer();
-		clearDescriptionTimer();
-		
-		nextTick(() => {
-			setTitle(data.title || '');
-			setDescription(data.description || '');
-		});
-		
-		return data;
-	}
 });
+
+watch(task, (newTask: Task | undefined) => {
+	if (newTask) {
+		if(!isTitleFocused.value) {
+			title.value = newTask.title || '';
+		}
+		
+		if(!isDescriptionFocused.value) {
+			description.value = newTask.description || '';
+		}
+	}
+}, { immediate: true });
 
 const currentStatus = computed(() =>
 	taskStatuses.find(s => s.value === task.value?.status)

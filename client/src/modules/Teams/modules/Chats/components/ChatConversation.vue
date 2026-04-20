@@ -183,13 +183,15 @@ const chatId = route.params.chatId as string;
 
 const messageText = ref('');
 
-const { 
+const {
 	messagesScrollEl,
 	newMessagesCount, 
 	handleScrollEvent, 
 	handleScrollToBottom, 
 	scrollToBottomAndReset 
 } = useChatScroll(toRef(props, 'messages'), toRef(props, 'isLoading'));
+
+void messagesScrollEl;
 
 const chatName = computed(() => {
 	const chats = queryClient.getQueryData<Chat[]>(['chats', teamId]);

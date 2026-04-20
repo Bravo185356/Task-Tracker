@@ -7,6 +7,7 @@ export function useTaskDetailsWs(taskId: string) {
   const queryClient = useQueryClient();
 
   const handleTaskUpdated = (task: Task) => {
+    console.log('handleTaskUpdated', task);
     queryClient.setQueryData<Task>(['task', taskId], () => task);
   };
 

@@ -2,7 +2,8 @@ export type { CreateBoardRequest } from './modules/Boards';
 export type { CreateChatRequest, CreateMessageRequest } from './modules/Chats';
 
 export { useBoardWebSocket, Column, columns, BoardsAPI } from './modules/Boards';
-export { taskDetailsWs, TasksAPI, useTaskDetailsWs, taskStatuses, taskPriorities, getPriorityTagClass } from './modules/Task';
+export { taskDetailsWs, TasksAPI, useTaskDetailsWs, taskStatuses, taskPriorities, getPriorityTagClass, TaskFilters } from './modules/Task';
+export type { TaskFiltersModel } from './modules/Task';
 export { ChatsAPI, useTeamChatsWs, useChatWs, ChatList, ChatConversation, useCreateMessage, useMarkRead } from './modules/Chats';
 
 export { TeamsAPI } from './api/teams';
