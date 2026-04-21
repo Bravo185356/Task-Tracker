@@ -23,7 +23,7 @@
 				<div class="flex flex-col gap-2">
 					<label class="text-sm text-zinc-400 font-medium tracking-wide">Assignee</label>
 					<Select
-						:model-value="props.filters.assignee"
+						:model-value="props.filters.assignedTo"
 						:options="assigneeOptions"
 						option-label="label"
 						option-value="value"
@@ -31,7 +31,7 @@
 						show-clear
 						class="w-full"
 						size="small"
-						@update:model-value="emit('update', { ...props.filters, assignee: $event })"
+						@update:model-value="emit('update', { ...props.filters, assignedTo: $event })"
 					/>
 				</div>
 
@@ -95,7 +95,7 @@ import Card from 'primevue/card';
 
 export interface TaskFiltersModel {
 	title: string;
-	assignee: string | null;
+	assignedTo: string | null;
 	priority: string | null;
 	status: string | null;
 	boardId: string | null;
@@ -113,7 +113,7 @@ const emit = defineEmits<{
 }>();
 
 const hasActiveFilters = computed(() =>
-	!!props.filters.title || !!props.filters.assignee || !!props.filters.priority || !!props.filters.status || !!props.filters.boardId,
+	!!props.filters.title || !!props.filters.assignedTo || !!props.filters.priority || !!props.filters.status || !!props.filters.boardId,
 );
 
 const assigneeOptions = computed(() => [

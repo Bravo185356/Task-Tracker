@@ -1,5 +1,5 @@
-import { Controller, Post, Body, Get, Param, Put, Patch, Delete } from '@nestjs/common';
-import { CreateTaskDto, UpdateTaskDto, PatchTaskDto } from './dto/tasks.dto';
+import { Controller, Post, Body, Get, Param, Put, Patch, Delete, Query } from '@nestjs/common';
+import { CreateTaskDto, UpdateTaskDto, PatchTaskDto, GetTasksQueryDto } from './dto/tasks.dto';
 import { TasksService } from './tasks.service';
 import { SerializeOptions } from '@nestjs/common';
 import { TaskResponseDto } from './dto/tasks.dto';
@@ -10,8 +10,8 @@ export class TasksController {
 	constructor(private readonly tasksService: TasksService) {}
 
 	@Get('/team/:teamId')
-	async getTasksByTeamId(@Param('teamId') teamId: string) {
-		return this.tasksService.getTasksByTeamId(teamId);
+	async getTasksByTeamId(@Param('teamId') teamId: string, @Query() query: GetTasksQueryDto) {
+		return this.tasksService.getTasksByTeamId(teamId, query);
 	}
 
 	@Get(':id')

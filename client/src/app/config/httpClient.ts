@@ -125,7 +125,16 @@ class HttpClient {
 		});
 	}
 
-	get<T>(endpoint: string): Promise<T> {
+	get<T>(endpoint: string, params?: Record<string, string | null>): Promise<T> {
+		if (params) {
+			const queriesArray = Object.entries(params).filter(([, value]) => value != null && value !== '');
+			const queryString = new URLSearchParams(queriesArray as [string, string][]).toString();
+
+			if (queryString) {
+				endpoint = `${endpoint}?${queryString}`
+			};
+		}
+		
 		return this.request<T>(endpoint, { method: 'GET' });
 	}
 

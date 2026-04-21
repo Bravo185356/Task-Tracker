@@ -7,4 +7,12 @@ interface CreateTaskRequest {
 	status?: string;
 }
 
-export type { CreateTaskRequest };
+interface GetTasksQuery {
+	title?: string;
+	assignedTo?: string | null;
+	priority?: string | null;
+	status?: string | null;
+	boardId?: string | null;
+}
+
+export type { CreateTaskRequest, GetTasksQuery };

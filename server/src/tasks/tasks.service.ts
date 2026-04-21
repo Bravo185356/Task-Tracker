@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateTaskDto, UpdateTaskDto, PatchTaskDto, TaskResponseDto } from './dto/tasks.dto';
+import { CreateTaskDto, UpdateTaskDto, PatchTaskDto, TaskResponseDto, GetTasksQueryDto } from './dto/tasks.dto';
 import { UnifiedWebsocketGateway } from '../websocket/unified/websocket.gateway';
 import { TaskStatus } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
@@ -39,9 +39,16 @@ export class TasksService {
 		});
 	}
 	
-	async getTasksByTeamId(teamId: string) {
-		return this.prisma.task.findMany({
-			where: { teamId },
+	async getTasksByTeamId(teamId: string, filters?: GetTasksQueryDto) {
+		return this.prisma.task.findMany({ 
+			where: {
+				teamId,
+				...(filters?.title && { title: { contains: filters.title, mode: 'insensitive' } }),
+				...(filters?.priority && { priority: filters.priority }),
+				...(filters?.status && { status: filters.status }),
+				...(filters?.boardId && { boardId: filters.boardId }),
+				...(filters?.assignedTo && { assignedTo: filters.assignedTo }),
+			},
 		});
 	}
 	

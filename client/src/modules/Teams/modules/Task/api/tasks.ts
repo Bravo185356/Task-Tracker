@@ -1,5 +1,5 @@
 import type { Task } from '@/shared/types/entities';
-import type { CreateTaskRequest } from './tasks.types';
+import type { CreateTaskRequest, GetTasksQuery } from './tasks.types';
 import { httpClient } from '@/app/config/httpClient';
 
 export class TasksAPI {
@@ -7,8 +7,8 @@ export class TasksAPI {
 		return httpClient.post(`/tasks`, data);
 	}
 
-	static async getTasks(teamId: string): Promise<Task[]> {
-		return httpClient.get(`/tasks/team/${teamId}`);
+	static async getTasks(teamId: string, query?: GetTasksQuery): Promise<Task[]> {
+		return httpClient.get(`/tasks/team/${teamId}`, query as Record<string, string | null>);
 	}
 	
 	static async getTaskById(taskId: string): Promise<Task> {

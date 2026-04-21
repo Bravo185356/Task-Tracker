@@ -6,11 +6,11 @@
 				@click="router.push(`/teams/${teamId}`)" 
 			/>
 			<h1 class="text-xl leading-6 font-bold">Tasks List</h1>
+			<div v-if="isUpdatingTasks && !isInitialLoading" class="!w-6 !h-6">
+				<ProgressSpinner class="!w-full !h-full" stroke-width="6" />
+			</div>
 		</div>
-		<div v-if="!team && !tasks || isLoading" class="flex justify-center items-center min-h-96">
-			<ProgressSpinner />
-		</div>
-		<div v-else-if="tasksError || teamError" class="flex justify-center items-center min-h-96">
+		<div v-if="tasksError || teamError" class="flex justify-center items-center min-h-96">
 			<p class="text-zinc-400 text-sm">{{ tasksError?.message || teamError?.message }}</p>
 		</div>
 		<div v-else class="flex gap-4 items-start">
@@ -22,6 +22,9 @@
 				@reset="resetActiveFilters"
 			/>
 			<div class="flex-1 min-w-0">
+				<div v-if="isInitialLoading" class="flex justify-center items-center min-h-96">
+					<ProgressSpinner />
+				</div>
 				<div v-if="tasks?.length === 0" class="flex flex-col items-center justify-center min-h-48 gap-2 text-zinc-400">
 					<i class="pi pi-filter text-3xl" />
 					<span class="text-sm">No tasks match the selected filters</span>
@@ -63,8 +66,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useQuery, useMutation } from '@tanstack/vue-query';
+import { ref, computed } from 'vue';
+import { useQuery, useMutation, keepPreviousData } from '@tanstack/vue-query';
 import { 
 	TasksAPI, 
 	taskStatuses, 
@@ -88,18 +91,19 @@ const router = useRouter();
 
 const activeFilters = ref<TaskFiltersModel>({
 	title: '',
-	assignee: null,
+	assignedTo: null,
 	priority: null,
 	status: null,
 	boardId: null,
 });
 
-const { data: tasks, error: tasksError } = useQuery({
-	queryKey: ['tasks', teamId],
-	queryFn: () => TasksAPI.getTasks(teamId),
+const { data: tasks, isLoading: isInitialLoading, isFetching: isUpdatingTasks, error: tasksError } = useQuery({
+	queryKey: computed(() => ['tasks', teamId, activeFilters.value]),
+	queryFn: () => TasksAPI.getTasks(teamId, activeFilters.value),
+	placeholderData: keepPreviousData,
 });
 
-const { data: team, isLoading, error: teamError } = useQuery({
+const { data: team, error: teamError } = useQuery({
 	queryKey: ['team', teamId],
 	queryFn: () => TeamsAPI.getTeamInfo(teamId),
 });
@@ -143,7 +147,7 @@ const updateActiveFilters = (newFilters: TaskFiltersModel) => {
 const resetActiveFilters = () => {
 	activeFilters.value = {
 		title: '',
-		assignee: null,
+		assignedTo: null,
 		priority: null,
 		status: null,
 		boardId: null,

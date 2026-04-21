@@ -1,6 +1,24 @@
-import { IsString, IsNotEmpty, IsUUID, IsOptional } from 'class-validator';
-import { Expose, Type, Exclude } from 'class-transformer';
+import { IsString, IsNotEmpty, IsUUID, IsOptional, IsEnum } from 'class-validator';
+import { Expose } from 'class-transformer';
 import { Priority, TaskStatus } from '@prisma/client';
+
+export class GetTasksQueryDto {
+	@IsOptional()
+	@IsString()
+	title?: string;
+	@IsOptional()
+	@IsString()
+	assignedTo?: string;
+	@IsOptional()
+	@IsEnum(Priority)
+	priority?: Priority;
+	@IsOptional()
+	@IsEnum(TaskStatus)
+	status?: TaskStatus;
+	@IsOptional()
+	@IsUUID()
+	boardId?: string;
+}
 
 export class CreateTaskDto {
 	@IsString()
