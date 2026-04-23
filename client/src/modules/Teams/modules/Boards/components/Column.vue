@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="flex flex-col rounded-2xl p-4 max-h-full w-80 shrink-0 bg-zinc-800/70 border transition-all duration-300 list-column"
+		class="flex flex-col rounded-2xl p-4 w-80 shrink-0 bg-zinc-800/70 border transition-all duration-300"
 		:class="[columnParams.borderColor, columnParams.shadowColor]"
 	>
 		<div class="flex items-center justify-between mb-4 pb-3 border-b" :class="columnParams.borderColor">
@@ -35,19 +35,21 @@
 				v-model="columnTasks"
 				item-key="id"
 				group="tasks"
-				class="flex-1 overflow-y-auto space-y-3 h-full"
+				class="flex-1 overflow-y-auto h-full"
 				ghost-class="opacity-50"
 				:column-id="columnParams.id"
 				drag-class="cursor-grabbing"
 				@end="changeTaskColumn"
 			>
-				<TaskCard
-					v-for="task in columnTasks"
-					:id="task.id"
-					:key="task.id"
-					:task="task"
-					@click="handleTaskClick(task.id)"
-				/>
+				<div class="pr-1 space-y-3">
+					<TaskCard
+						v-for="task in columnTasks"
+						:id="task.id"
+						:key="task.id"
+						:task="task"
+						@click="handleTaskClick(task.id)"
+					/>
+				</div>
 			</VueDraggableNext>
 		</div>
 		<Button

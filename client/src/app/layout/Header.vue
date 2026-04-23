@@ -1,5 +1,5 @@
 <template>
-	<header class="p-4 border-b border-gray-200">
+	<header class="fixed top-0 w-full z-10 p-4 bg-zinc-900 border-b border-gray-200">
 		<div class="flex justify-between items-center max-w-[1400px] mx-auto">
 			<div class="flex items-center gap-12">
 				<h1 class="text-xl font-bold cursor-pointer" @click="router.push('/')">

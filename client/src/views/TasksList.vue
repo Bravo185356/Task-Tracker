@@ -1,5 +1,5 @@
 <template>
-	<div class="flex flex-col gap-4">
+	<div class="flex flex-col gap-4 flex-1">
 		<div class="flex items-center gap-2">
 			<i 
 				class="pi pi-arrow-left before:text-xl text-zinc-400 transition-colors hover:text-white cursor-pointer p-1" 
@@ -13,7 +13,7 @@
 		<div v-if="tasksError || teamError" class="flex justify-center items-center min-h-96">
 			<p class="text-zinc-400 text-sm">{{ tasksError?.message || teamError?.message }}</p>
 		</div>
-		<div v-else class="flex gap-4 items-start">
+		<div v-else class="flex flex-row-reverse gap-6 items-start">
 			<TaskFilters
 				:filters="activeFilters"
 				:team="team"
@@ -29,16 +29,13 @@
 					<i class="pi pi-filter text-3xl" />
 					<span class="text-sm">No tasks match the selected filters</span>
 				</div>
-				<div v-else class="flex flex-col gap-3">
+				<div v-else class="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-176px)] pr-1">
 					<Card v-for="task in tasks" :key="task.id">
 						<template #content>
-							<div class="flex justify-between items-center gap-2">
-								<div class="mb-2">
+							<div class="flex justify-between items-center gap-2 mb-2">
+								<div class="flex">
 									<div class="flex items-center gap-2">
-										<Tag
-											:value="getTaskStatusLabel(task.status)"
-											:class="getTagClasses(task.status)"
-										/>
+										
 										<Tag
 											v-if="task.priority"
 											:value="task.priority"
@@ -53,10 +50,16 @@
 								</div>
 								<div class="pi pi-trash cursor-pointer" @click.stop="handleDeleteTask(task.id)" />
 							</div>
-							<div v-if="task.assignedTo">
-								<span class="text-sm text-zinc-400">Assigned to {{ getAssignedUser(task.assignedTo) }}</span>
+							<div class="flex items-center gap-2">
+								<Tag
+									:value="getTaskStatusLabel(task.status)"
+									:class="getTagClasses(task.status)"
+								/>
+								<div v-if="task.assignedTo">
+									<span class="text-sm text-zinc-400">Assigned to {{ getAssignedUser(task.assignedTo) }}</span>
+								</div>
+								<span v-else class="text-sm text-zinc-400">Unassigned</span>
 							</div>
-							<span v-else class="text-sm text-zinc-400">Unassigned</span>
 						</template>
 					</Card>
 				</div>

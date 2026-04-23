@@ -1,7 +1,7 @@
 <template>
-	<div class="app-dark min-h-screen flex flex-col bg-zinc-900 text-zinc-100">
+	<div class="app-dark min-h-screen flex flex-col bg-zinc-900 text-zinc-100 overflow-hidden">
 		<Header />
-		<div class="flex flex-col max-w-[1436px] w-full mx-auto my-6 px-4 flex-1">
+		<div class="flex flex-col max-w-[1436px] w-full mx-auto mt-[108px] mb-4 px-4 min-h-[calc(100vh-124px)]">
 			<RouterView />
 		</div>
 		<Auth v-if="authStore.showAuthModal" v-model:visible="showAuthModal" />

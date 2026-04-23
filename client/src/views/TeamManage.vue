@@ -1,19 +1,25 @@
 <template>
-	<div class="flex justify-between items-center mb-6">
-		<div class="text-2xl font-bold">Manage Team</div>
-		<div class="flex gap-2 justify-end">
-			<Button
-				v-if="member?.role === 'OWNER' || member?.role === 'ADMIN'"
-				label="Invite User"
-				icon="pi pi-user-plus"
-				@click="isInviteUserModalOpen = true"
-			/>
-			<Button
-				label="Delete Team"
-				icon="pi pi-trash"
-				severity="danger"
-				@click="isDeleteTeamModalOpen = true"
-			/>
+	<div class="flex flex-col flex-1">
+		<div class="flex justify-between items-start mb-6">
+			<div class="text-2xl font-bold">Manage Team</div>
+			<div class="flex gap-2 justify-end">
+				<Button
+					v-if="teamsStore.isAdminOrOwner"
+					label="Invite User"
+					icon="pi pi-user-plus"
+					@click="isInviteUserModalOpen = true"
+				/>
+				<Button
+					v-if="teamsStore.isOwner"
+					label="Delete Team"
+					icon="pi pi-trash"
+					severity="danger"
+					@click="isDeleteTeamModalOpen = true"
+				/>
+			</div>
+		</div>
+		<div>
+			<div>IN DEVELOPMENT</div>
 		</div>
 	</div>
 	<Dialog
@@ -55,10 +61,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useMutation, useQuery } from '@tanstack/vue-query';
-import { TeamsAPI, InviteUserModal } from '@/modules/Teams';
-import { useAuthStore } from '@/modules/Auth';
+import { TeamsAPI, InviteUserModal, useTeamsStore } from '@/modules/Teams';
 import { useToast } from 'primevue/usetoast';
 import { useRoute, useRouter } from 'vue-router';
 import Button from 'primevue/button';
@@ -68,7 +73,7 @@ import InputText from 'primevue/inputtext';
 const toast = useToast();
 const route = useRoute();
 const router = useRouter();
-const authStore = useAuthStore();
+const teamsStore = useTeamsStore();
 
 const teamId = route.params.teamId as string;
 
@@ -100,7 +105,4 @@ const { mutate: deleteTeam, isPending } = useMutation({
 	},
 });
 
-const member = computed(() => {
-	return team.value?.members?.find((member) => member.userId === authStore.user?.id);
-});
 </script>
