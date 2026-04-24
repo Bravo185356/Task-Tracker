@@ -30,6 +30,7 @@ export class TeamsService {
                 id: true,
                 username: true,
                 email: true,
+                avatar: true,
               },
             },
           },
@@ -60,6 +61,7 @@ export class TeamsService {
               select: {
                 username: true,
                 email: true,
+                avatar: true,
               },
             },
           },
@@ -83,6 +85,7 @@ export class TeamsService {
               select: {
                 username: true,
                 email: true,
+                avatar: true,
               },
             },
           },
@@ -105,6 +108,7 @@ export class TeamsService {
         ...member,
         username: user.username,
         email: user.email,
+        avatar: user.avatar,
       })),
     }
     
@@ -127,6 +131,7 @@ export class TeamsService {
                 id: true,
                 username: true,
                 email: true,
+                avatar: true,
               },
             },
           },

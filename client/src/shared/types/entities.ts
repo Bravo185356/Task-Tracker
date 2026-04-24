@@ -7,6 +7,7 @@ interface User {
 	id: string;
 	username: string;
 	email: string;
+	avatar: string | null;
 }
 
 interface Team {
@@ -26,6 +27,7 @@ interface TeamMember {
 	joinedAt: string;
 	createdAt: string;
 	updatedAt: string;
+	avatar: string | null;
 }
 
 interface Board {
@@ -71,6 +73,7 @@ interface ChatDetails extends Chat {
 interface ChatParticipant {
 	userId: string;
 	username: string;
+	avatar: string | null;
 	joinedAt: string;
 	lastReadAt: string;
 }

@@ -8,6 +8,7 @@ export class MemberResponseDto {
 	@Expose() role: Role;
 	@Expose() username: string;
 	@Expose() email: string;
+	@Expose() avatar: string | null;
 	@Expose() joinedAt: Date;
 	@Expose() createdAt: Date;
 	@Expose() updatedAt: Date;

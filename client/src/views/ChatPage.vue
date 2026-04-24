@@ -42,7 +42,7 @@
 				<ChatConversation
 					:messages="chatDetails?.messages ?? []"
 					:is-loading="isFetching"
-					:current-user-id="authStore.user!.id"
+					:current-user-id="authStore.user?.id"
 					:first-message="firstMessage"
 					@send-message="handleSendMessage"
 				/>

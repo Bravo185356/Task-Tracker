@@ -48,13 +48,14 @@ export class UsersService {
     });
   }
 
-  async create(email: string, password: string, username: string): Promise<User> {
+  async create(email: string, password: string, username: string, avatar?: string): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
     return this.prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         username,
+        avatar,
       },
     });
   }
@@ -65,6 +66,7 @@ export class UsersService {
         id: true,
         email: true,
         username: true,
+        avatar: true,
       },
     });
   }

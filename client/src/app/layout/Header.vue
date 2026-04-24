@@ -7,8 +7,11 @@
 				</h1>
 			</div>
 			<div class="flex items-center gap-3">
-				<div class="text-lg font-semibold">
-					{{ authStore.user?.username }}
+				<div v-if="authStore.isAuthenticated" class="flex items-center gap-2">
+					<Avatar :url="authStore.user!.avatar" shape="circle" />
+					<div class="text-lg font-semibold">
+						{{ authStore.user!.username }}
+					</div>
 				</div>
 				<Button
 					text 
@@ -27,6 +30,7 @@ import { useAuthStore, AuthAPI } from '@/modules/Auth';
 import { useTeamsStore } from '@/modules/Teams';
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import Button from 'primevue/button';
+import Avatar from '@/shared/components/Avatar.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();

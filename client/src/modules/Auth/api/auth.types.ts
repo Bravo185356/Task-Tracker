@@ -8,6 +8,7 @@ interface RegisterFormData {
 	email: string;
 	password: string;
 	username: string;
+	avatar?: File | null;
 }
 
 interface LoginFormData {

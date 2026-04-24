@@ -59,13 +59,13 @@ export class AuthService {
     };
   }
 
-  async register(email: string, password: string, username: string) {
+  async register(email: string, password: string, username: string, avatar?: string) {
     const existingUser = await this.usersService.findExistingUser(email, username);
     if (existingUser) {
       throw new UnauthorizedException('User already exists');
     }
 
-    const user = await this.usersService.create(email, password, username);
+    const user = await this.usersService.create(email, password, username, avatar);
     const { password: _, ...result } = user;
 
     const payload: TokenPayload = {

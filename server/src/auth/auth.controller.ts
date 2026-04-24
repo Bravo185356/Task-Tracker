@@ -1,4 +1,4 @@
-import { 
+import {
   Controller,
   Post,
   Body,
@@ -6,9 +6,33 @@ import {
   Req,
   HttpCode,
   HttpStatus,
-  UnauthorizedException, } from '@nestjs/common';
+  UnauthorizedException,
+  BadRequestException,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import { mkdirSync } from 'fs';
+import { randomUUID } from 'crypto';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
+
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
+const ALLOWED_AVATAR_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+
+const avatarsStorage = diskStorage({
+  destination: (_req, _file, cb) => {
+    const dir = join(process.cwd(), 'uploads', 'avatars');
+    mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (_req, file, cb) => {
+    const extension = extname(file.originalname).toLowerCase();
+    cb(null, `${randomUUID()}${extension}`);
+  },
+});
 
 @Controller('auth')
 export class AuthController {
@@ -52,14 +76,29 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: avatarsStorage,
+      limits: { fileSize: MAX_AVATAR_BYTES },
+      fileFilter: (_req, file, cb) => {
+        if (!ALLOWED_AVATAR_MIME_TYPES.has(file.mimetype)) {
+          return cb(new BadRequestException('Avatar must be jpg, png, webp or gif image') as Error, false);
+        }
+        cb(null, true);
+      },
+    }),
+  )
   async register(
     @Body() body: { email: string; password: string; username: string },
+    @UploadedFile() avatar: Express.Multer.File | undefined,
     @Res({ passthrough: true }) res: Response
   ) {
+    const avatarPath = avatar ? `/uploads/avatars/${avatar.filename}` : undefined;
     const result = await this.authService.register(
       body.email,
       body.password,
       body.username,
+      avatarPath,
     );
     this.setCookies(res, result.accessToken, result.refreshToken);
     

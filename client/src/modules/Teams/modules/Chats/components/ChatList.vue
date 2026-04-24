@@ -10,7 +10,7 @@
 					@click="onChatSelect(chat)"
 				>
 					<div class="flex gap-2 min-w-0">
-						<div class="w-[40px] h-[40px] rounded-full bg-zinc-500 shrink-0" />
+						<Avatar :url="getAvatarUrl(chat)" />
 						<div class="flex flex-col gap-1 max-w-[70%]">
 							<span class="leading-tight">{{ getChatName(chat) }}</span>
 							<span v-if="chat.lastMessage?.body" class="text-xs text-zinc-400 inline-block truncate">
@@ -38,7 +38,7 @@
 					class="cursor-pointer block hover:bg-gray-500/50 px-4 py-2 transition-colors flex gap-2"
 					:class="{ 'bg-zinc-500/50': userId === activeChatId }"
 				>
-					<div class="w-[40px] h-[40px] rounded-full bg-zinc-500 shrink-0" />
+					<Avatar :url="getAvatarUrl()" shape="circle" />
 					<div class="flex flex-col gap-1">
 						<span class="leading-tight truncate">{{ getDraftChatName() }}</span>
 						<span class="text-xs text-zinc-400">Draft</span>
@@ -58,6 +58,7 @@ import { useAuthStore } from '@/modules/Auth';
 import { ChatsAPI } from '../api/chats';
 import { getDateString } from '../utilities/getDateString';
 import { useConfirm } from 'primevue/useconfirm';
+import Avatar from '@/shared/components/Avatar.vue';
 
 const props = defineProps<{
 	teamId: string;
@@ -72,13 +73,23 @@ const confirm = useConfirm();
 const queryClient = useQueryClient();
 const authStore = useAuthStore();
 const route = useRoute();
+
 const userId = computed(() => route.params.userId as string);
 const isChatCreated = computed(() => chats.value?.some((chat) => chat.type === 'DIRECT' && chat.participants.some((participant) => participant.userId === userId.value)));
-
 const { data: chats } = useQuery({
 	queryKey: ['chats', props.teamId],
 	queryFn: () => ChatsAPI.getChats(props.teamId),
 });
+
+const getAvatarUrl = (chat?: Chat) => {
+	if(!chat) {
+		const team = queryClient.getQueryData<Team>(['team', props.teamId])!;
+		return team.members.find((member) => member.userId === userId.value)!.avatar;
+	}
+	
+	const otherUser = chat.participants.find((p) => p.userId !== authStore.user?.id)!;
+	return otherUser.avatar;
+};
 
 const getChatName = (chat: Chat) => {
 	if (chat.type === 'DIRECT') {

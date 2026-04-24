@@ -165,7 +165,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 
 const props = defineProps<{
 	messages: Message[];
-	currentUserId: string;
+	currentUserId?: string;
 	isLoading: boolean;
 	firstMessage?: string;
 }>();

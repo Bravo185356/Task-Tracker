@@ -12,6 +12,7 @@ model User {
   email    String       @unique
   password String
   username String       @unique
+  avatar   String?
   teams    TeamMember[]
   assignedTasks Task[]
   chatParticipations ChatParticipant[]

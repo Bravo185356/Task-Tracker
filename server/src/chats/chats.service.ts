@@ -158,7 +158,16 @@ export class ChatsService {
         const full = await this.prisma.chat.findUniqueOrThrow({
           where: { id: dup.id },
           include: {
-            participants: { include: { user: { select: { id: true, username: true } } } },
+            participants: { 
+              include: { 
+                user: { 
+                  select: { 
+                    id: true, 
+                    username: true, avatar: true 
+                  } 
+                } 
+              } 
+            },
           },
         });
         return await this.mapChatListItem(full, userId);
@@ -173,7 +182,17 @@ export class ChatsService {
             create: [{ userId }, { userId: dto.otherUserId }],
           },
         },
-        include: { participants: { include: { user: { select: { id: true, username: true } } } } },
+        include: { 
+          participants: { 
+            include: { 
+              user: { 
+                select: { 
+                  id: true, username: true, avatar: true 
+                } 
+              } 
+            } 
+          } 
+        },
       });
       return await this.mapChatListItem(chat, userId);
     }
@@ -195,7 +214,19 @@ export class ChatsService {
             create: [userId, ...others].map((uid) => ({ userId: uid })),
           },
         },
-        include: { participants: { include: { user: { select: { id: true, username: true } } } } },
+        include: { 
+          participants: { 
+            include: { 
+              user: { 
+                select: { 
+                  id: true, 
+                  username: true,
+                  avatar: true  
+                } 
+              } 
+            } 
+          } 
+        },
       });
       return await this.mapChatListItem(chat, userId);
     }
@@ -216,7 +247,7 @@ export class ChatsService {
         userId: string;
         joinedAt: Date;
         lastReadAt: Date;
-        user: { id: string; username: string };
+        user: { id: string; username: string; avatar: string | null };
       }>;
     },
     currentUserId: string,
@@ -245,6 +276,7 @@ export class ChatsService {
       participants: chat.participants.map((p) => ({
         userId: p.userId,
         username: p.user.username,
+        avatar: p.user.avatar,
         joinedAt: p.joinedAt.toISOString(),
         lastReadAt: p.lastReadAt.toISOString(),
       })),
@@ -262,7 +294,7 @@ export class ChatsService {
       orderBy: { updatedAt: 'desc' },
       include: {
         participants: {
-          include: { user: { select: { id: true, username: true } } },
+          include: { user: { select: { id: true, username: true, avatar: true } } },
         },
       },
     });
@@ -283,7 +315,16 @@ export class ChatsService {
       where: { id: chatId },
       include: {
         participants: {
-          include: { user: { select: { id: true, username: true, email: true } } },
+          include: { 
+            user: { 
+              select: { 
+                id: true, 
+                username: true, 
+                email: true, 
+                avatar: true 
+              } 
+            } 
+          },
         },
       },
     });
@@ -305,6 +346,7 @@ export class ChatsService {
         userId: p.userId,
         username: p.user.username,
         email: p.user.email,
+        avatar: p.user.avatar,
         joinedAt: p.joinedAt.toISOString(),
         lastReadAt: p.lastReadAt.toISOString(),
       })),
