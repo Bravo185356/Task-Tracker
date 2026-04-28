@@ -8,7 +8,7 @@
 			</div>
 			<div class="flex items-center gap-3">
 				<div v-if="authStore.isAuthenticated" class="flex items-center gap-2">
-					<Avatar :url="authStore.user!.avatar" shape="circle" />
+					<Avatar :url="authStore.user!.avatar" />
 					<div class="text-lg font-semibold">
 						{{ authStore.user!.username }}
 					</div>

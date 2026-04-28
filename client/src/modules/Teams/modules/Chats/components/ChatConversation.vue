@@ -29,27 +29,41 @@
 					/>
 				</div>
 			</Transition>
-			<div class="flex flex-col gap-4 p-4">
+			<div class="flex flex-col gap-3 p-4 md:gap-4 md:p-5">
 				<div
 					v-for="message in messages"
 					:key="message.id"
-					class="relative max-w-[65%] max-md:max-w-[75%] min-w-20 max-md:self-end md:self-start border-1 border-zinc-700/50 rounded-lg p-[14px] pb-[18px] text-sm"
+					class="w-fit min-w-[84px] max-w-[82%] md:max-w-[70%] rounded-2xl border border-zinc-700/50 px-3.5 py-2.5"
 					:class="{ 'max-md:self-end bg-zinc-500/50': message.authorId === currentUserId, 'max-md:self-start bg-zinc-900/50': message.authorId !== currentUserId }"
 				>
-					<div class="flex gap-2">
-						<span v-if="message.body" class="text-sm break-all">
+					<div class="flex flex-col gap-2">
+						<div class="flex items-center justify-between gap-4">
+							<div class="flex items-center gap-2">
+								<Avatar
+									:url="getAuthorAvatar(message.authorId)"
+									:size="30"
+								/>
+								<span class="text-sm font-medium text-zinc-300">
+									{{ getAuthorName(message.authorId) }}
+								</span>
+							</div>
+							<span class="text-[11px] leading-none text-zinc-400">
+								{{ getDateString(message.createdAt) }}
+							</span>
+						</div>
+						<span v-if="message.body" class="text-sm leading-5 break-words whitespace-pre-wrap">
 							{{ message.body }}
 						</span>
-						<div v-if="message.attachments?.length" class="flex flex-wrap gap-2">
+						<div v-if="message.attachments?.length" class="flex flex-wrap gap-2 pt-0.5">
 							<template v-for="attachment in message.attachments" :key="attachment.id">
-								<div v-if="attachment.id.startsWith('temp-')">
+								<div v-if="attachment.id.startsWith('temp-')" class="w-[40px] h-[40px] rounded-xl border border-zinc-700/50 flex items-center justify-center">
 									<ProgressSpinner class="w-4 h-4" />
 								</div>
 							<img
 								v-else-if="attachment.mimeType.startsWith('image/')"
 								:src="getAttachmentUrl(attachment.url)"
 								:alt="attachment.originalFileName"
-								class="max-w-[200px] max-h-[200px] rounded-lg object-cover cursor-pointer"
+								class="max-w-[220px] max-h-[220px] rounded-xl object-cover cursor-pointer"
 								@click="openAttachment(attachment.url)"
 								@load="handleScrollToBottom"
 							/>
@@ -57,7 +71,7 @@
 									v-else
 									:href="getAttachmentUrl(attachment.url)"
 									target="_blank"
-									class="flex items-center gap-1.5 border-1 border-zinc-700/50 rounded px-2 py-1 text-xs transition-colors"
+									class="flex items-center gap-1.5 border border-zinc-700/50 rounded-xl px-2.5 py-1.5 text-xs transition-colors"
 								>
 									<i v-if="attachment.mimeType === 'application/pdf'" class="pi pi-file-pdf text-red-400" />
 									<i v-else class="pi pi-file" />
@@ -65,9 +79,7 @@
 								</a>
 							</template>
 						</div>
-						<span class="text-xs text-zinc-400 self-center leading-3 absolute bottom-[5px] right-[5px]">
-							{{ getDateString(message.createdAt) }}
-						</span>
+						
 					</div>
 				</div>
 				<div 
@@ -162,6 +174,7 @@ import { getDateString } from '../utilities/getDateString';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
+import Avatar from '@/shared/components/Avatar.vue';
 
 const props = defineProps<{
 	messages: Message[];
@@ -174,7 +187,6 @@ const emit = defineEmits<{
 	'sendMessage': [payload: { message: string; files?: File[] }]
 }>();
 
-const { fileInputRef, selectedFiles, previewUrls, handleFileSelect, removeFile, clearFiles } = useFileUpload();
 const route = useRoute();
 const queryClient = useQueryClient();
 
@@ -182,6 +194,15 @@ const teamId = route.params.teamId as string;
 const chatId = route.params.chatId as string;
 
 const messageText = ref('');
+
+const { 
+	fileInputRef, 
+	selectedFiles, 
+	previewUrls, 
+	handleFileSelect, 
+	removeFile, 
+	clearFiles 
+} = useFileUpload();
 
 const {
 	messagesScrollEl,
@@ -192,6 +213,11 @@ const {
 } = useChatScroll(toRef(props, 'messages'), toRef(props, 'isLoading'));
 
 void messagesScrollEl;
+
+const teamMembersById = computed(() => {
+	const team = queryClient.getQueryData<Team>(['team', teamId]);
+	return new Map((team?.members ?? []).map((member) => [member.userId, member]));
+});
 
 const chatName = computed(() => {
 	const chats = queryClient.getQueryData<Chat[]>(['chats', teamId]);
@@ -207,9 +233,16 @@ const chatName = computed(() => {
 	}
 });
 
+const openAttachment = (url: string) => window.open(getAttachmentUrl(url), '_blank');
 const getAttachmentUrl = (url: string) => `${API_URL}${url}`;
 
-const openAttachment = (url: string) => window.open(getAttachmentUrl(url), '_blank');
+const getAuthorName = (authorId: string) => {
+	return teamMembersById.value.get(authorId)?.username ?? 'Unknown user';
+};
+
+const getAuthorAvatar = (authorId: string) => {
+	return teamMembersById.value.get(authorId)?.avatar ?? null;
+};
 
 const handleSendMessage = () => {
 	const hasText = messageText.value.trim().length;
