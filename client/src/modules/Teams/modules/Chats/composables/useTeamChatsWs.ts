@@ -1,29 +1,19 @@
-import type { Chat, Message } from '@/shared/types/entities';
+import type { Chat, Message, Team } from '@/shared/types/entities';
 import { useQueryClient } from '@tanstack/vue-query';
 import { chatActivityWs } from '../api/websocket/chats.ws';
-import { onMounted, onUnmounted, type MaybeRefOrGetter, toValue } from 'vue';
+import { onMounted, onUnmounted, type MaybeRefOrGetter, toValue, computed } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { TeamsAPI } from '@/modules/Teams';
-import { useQuery } from '@tanstack/vue-query';
 import { useRoute } from 'vue-router';
 
-
-/**
- * Сайдбар чатов команды: подписка на chat:activity:created.
- * Комната user подключается глобально в App.vue.
- */
 export function useTeamChatsWs(teamId: MaybeRefOrGetter<string>) {
 	const queryClient = useQueryClient();
 	const getTeamId = () => toValue(teamId);
 	const toast = useToast();
 	const route = useRoute();
-	const { data: team } = useQuery({
-		queryKey: ['team', teamId],
-		queryFn: () => TeamsAPI.getTeamInfo(getTeamId()),
-	});
+	
+	const team = computed(() => queryClient.getQueryData<Team>(['team', getTeamId()]));
 
 	const handleChatMessageCreated = (chatUpdate: { chatId: string; message: Message }) => {
-		console.log(chatUpdate);
 		const teamId = getTeamId();
 		queryClient.setQueryData<Chat[]>(['chats', teamId], (old: Chat[] | undefined) => {
 			if (!old?.length) { 

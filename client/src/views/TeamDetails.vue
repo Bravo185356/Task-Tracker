@@ -36,13 +36,6 @@
 		</div>
 		<div>IN DEVELOPMENT</div>
 	</div>
-	<div v-else>
-		<div class="flex justify-center items-center flex-1">
-			<p class="text-3xl font-bold">
-				Team Not Found
-			</p>
-		</div>
-	</div>
 	<CreateTaskModal
 		v-if="isCreateTaskDialogOpen"
 		v-model:visible="isCreateTaskDialogOpen"

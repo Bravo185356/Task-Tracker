@@ -165,7 +165,6 @@ export class TeamsService {
   }
 
   async remove(teamId: string, userId: string) {
-    // Только владелец может удалить команду
     await this.checkUserPermission(teamId, userId, [Role.OWNER]);
 
     await this.prisma.team.delete({
