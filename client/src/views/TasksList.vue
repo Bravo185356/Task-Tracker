@@ -30,38 +30,7 @@
 					<span class="text-sm">No tasks match the selected filters</span>
 				</div>
 				<div v-else class="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-176px)] pr-1">
-					<Card v-for="task in tasks" :key="task.id">
-						<template #content>
-							<div class="flex justify-between items-center gap-2 mb-2">
-								<div class="flex">
-									<div class="flex items-center gap-2">
-										
-										<Tag
-											v-if="task.priority"
-											:value="task.priority"
-											:class="getPriorityTagClass(task.priority)"
-										/>
-									</div>
-									<RouterLink :to="`/teams/${teamId}/tasks/${task.id}`">
-										<h4 class="text-2xl font-bold cursor-pointer hover:text-blue-500">
-											{{ task.title }}
-										</h4>
-									</RouterLink>
-								</div>
-								<div class="pi pi-trash cursor-pointer" @click.stop="handleDeleteTask(task.id)" />
-							</div>
-							<div class="flex items-center gap-2">
-								<Tag
-									:value="getTaskStatusLabel(task.status)"
-									:class="getTagClasses(task.status)"
-								/>
-								<div v-if="task.assignedTo">
-									<span class="text-sm text-zinc-400">Assigned to {{ getAssignedUser(task.assignedTo) }}</span>
-								</div>
-								<span v-else class="text-sm text-zinc-400">Unassigned</span>
-							</div>
-						</template>
-					</Card>
+					<TaskCard v-for="task in tasks" :key="task.id" :task="task" />
 				</div>
 			</div>
 		</div>
@@ -70,24 +39,19 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useQuery, useMutation, keepPreviousData } from '@tanstack/vue-query';
+import { useQuery, keepPreviousData } from '@tanstack/vue-query';
 import { 
 	TasksAPI, 
-	taskStatuses, 
 	TeamsAPI, 
-	getPriorityTagClass, 
 	BoardsAPI, 
 	TaskFilters, 
 	type TaskFiltersModel 
 } from '@/modules/Teams';
 import { useRoute, useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
 import { useDebouncedField } from '@/shared/composables/useDebouncedField';
-import Card from 'primevue/card';
-import Tag from 'primevue/tag';
 import ProgressSpinner from 'primevue/progressspinner';
+import TaskCard from '@/modules/Teams/modules/Task/components/TaskCard.vue';
 
-const toast = useToast();
 const route = useRoute();
 const teamId = route.params.teamId as string;
 const router = useRouter();
@@ -116,24 +80,6 @@ const { data: boards } = useQuery({
 	queryFn: () => BoardsAPI.getBoards(teamId),
 });
 
-const { mutate: deleteTask } = useMutation({
-	mutationFn: (taskId: string) => TasksAPI.deleteTask(taskId),
-	onSuccess: () => {
-		toast.add({
-			severity: 'success',
-			summary: 'Task deleted',
-			detail: 'Task has been deleted'
-		});
-	},
-	onError: () => {
-		toast.add({
-			severity: 'error',
-			summary: 'Error',
-			detail: 'Failed to delete task'
-		});
-	},
-});
-
 const { setValue: setDebouncedTitle } = useDebouncedField({ onUpdate: (newTitle) => {
 	activeFilters.value.title = newTitle;
 } });
@@ -156,9 +102,4 @@ const resetActiveFilters = () => {
 		boardId: null,
 	};
 };
-
-const handleDeleteTask = (taskId: string) => deleteTask(taskId);
-const getTagClasses = (taskStatus: string) => taskStatuses.find((s) => s.value === taskStatus)!.tagClass;
-const getTaskStatusLabel = (taskStatus: string) => taskStatuses.find((s) => s.value === taskStatus)!.label;
-const getAssignedUser = (userId: string | null) => team.value?.members.find((m) => m.userId === userId)?.username;
 </script>

@@ -35,21 +35,19 @@
 				v-model="columnTasks"
 				item-key="id"
 				group="tasks"
-				class="flex-1 overflow-y-auto h-full"
+				class="flex flex-col gap-3 flex-1 overflow-y-auto h-full"
 				ghost-class="opacity-50"
 				:column-id="columnParams.id"
 				drag-class="cursor-grabbing"
 				@end="changeTaskColumn"
 			>
-				<div class="pr-1 space-y-3">
-					<TaskCard
-						v-for="task in columnTasks"
-						:id="task.id"
-						:key="task.id"
-						:task="task"
-						@click="handleTaskClick(task.id)"
-					/>
-				</div>
+				<TaskCard
+					v-for="task in columnTasks"
+					:id="task.id"
+					:key="task.id"
+					:task="task"
+					@click="handleTaskClick(task.id)"
+				/>
 			</VueDraggableNext>
 		</div>
 		<Button

@@ -5,12 +5,8 @@
 				<h4 class="text-base font-semibold text-white mb-3 leading-tight line-clamp-2 group-hover:text-white/90 transition-colors">
 					{{ task.title }}
 				</h4>
-				
 				<Divider class="my-3" />
-
-				<!-- Task Footer -->
 				<div class="flex items-center justify-between">
-					<!-- Assigned User -->
 					<div v-if="task.assigned" class="flex items-center gap-2">
 						<Avatar 
 							:label="task.assigned.username.charAt(0).toUpperCase()"

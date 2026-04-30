@@ -1,11 +1,8 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateTeamDto } from './dto/create-team.dto';
-import { UpdateTeamDto } from './dto/update-team.dto';
-import { Role } from '@prisma/client';
-import { InviteUserDto } from './dto/invite-user.dto';
+import { CreateTeamDto, UpdateTeamDto, TeamResponseDto, InviteUserDto } from './dto/teams.dto';
+import { Role, TaskStatus } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
-import { TeamResponseDto } from './dto/response-dto';
 
 @Injectable()
 export class TeamsService {
@@ -101,6 +98,8 @@ export class TeamsService {
     if (!isMember) {
       throw new ForbiddenException('You are not a member of this team');
     }
+
+    const statistic = await this.getTeamStatistic(teamId);
     
     const result = {
       ...team,
@@ -110,6 +109,15 @@ export class TeamsService {
         email: user.email,
         avatar: user.avatar,
       })),
+      lastCreatedTasks: statistic.lastCreatedTasks,
+      lastCompletedTasks: statistic.lastCompletedTasks,
+      statistic: {
+        totalTasks: statistic.totalTasks,
+        tasksCompleted: statistic.tasksCompleted,
+        tasksInProgress: statistic.tasksInProgress,
+        tasksTodo: statistic.tasksTodo,
+        unassignedTasks: statistic.unassignedTasks,
+      },
     }
     
     return plainToInstance(TeamResponseDto, result, { 
@@ -174,6 +182,60 @@ export class TeamsService {
     return { message: 'Team deleted successfully' };
   }
 
+  private async getTeamStatistic(teamId: string) {
+    const LAST_TASK_LIMIT = 3;
+    
+    const progressStatuses = [
+      TaskStatus.IN_PROGRESS,
+      TaskStatus.REVIEW,
+      TaskStatus.TESTING,
+    ] as const;
+    
+    const lastCreatedTasks = await this.prisma.task.findMany({
+      where: {
+        teamId,
+        status: { not: TaskStatus.DONE },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: LAST_TASK_LIMIT,
+    })
+      
+    const lastCompletedTasks = await this.prisma.task.findMany({
+      where: {
+        teamId,
+        status: TaskStatus.DONE,
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: LAST_TASK_LIMIT,
+    })
+      
+    const statusCounts = await this.prisma.task.groupBy({
+      by: ['status'],
+      where: { teamId },
+      _count: { _all: true },
+    })
+    
+    const countByStatus = new Map(statusCounts.map(s => [s.status, s._count._all]));
+    
+    const totalTasks = Array.from(countByStatus.values()).reduce((a, b) => a + b, 0);
+    const tasksCompleted = countByStatus.get(TaskStatus.DONE) ?? 0;
+    const tasksInProgress = progressStatuses.reduce((sum, status) => sum + (countByStatus.get(status) ?? 0), 0);
+    const tasksTodo = countByStatus.get(TaskStatus.TODO) ?? 0;
+    const unassignedTasks = await this.prisma.task.count({
+      where: { teamId, assignedTo: null },
+    });
+    
+    return {
+      lastCreatedTasks,
+      lastCompletedTasks,
+      totalTasks,
+      tasksCompleted,
+      tasksInProgress,
+      tasksTodo,
+      unassignedTasks,
+    };
+  }
+  
   private async checkUserPermission(
     teamId: string,
     userId: string,

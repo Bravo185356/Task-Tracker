@@ -16,6 +16,17 @@ interface Team {
 	members: TeamMember[];
 	createdAt: string;
 	updatedAt: string;
+	lastCreatedTasks?: Task[];
+	lastCompletedTasks?: Task[];
+	statistic: TeamStatistic;
+}
+
+interface TeamStatistic {
+	totalTasks: number;
+	tasksCompleted: number;
+	tasksInProgress: number;
+	tasksTodo: number;
+	unassignedTasks: number;
 }
 
 interface TeamMember {
@@ -96,4 +107,18 @@ interface Message {
 	attachments?: Attachment[];
 }
 
-export type { User, Team, TeamMember, Role, Board, Task, TaskColumn, Priority, Chat, ChatDetails, ChatParticipant, Message, Attachment };
+export type { 
+	User, 
+	Team, 
+	TeamMember, 
+	Role, 
+	Board, 
+	Task, 
+	TaskColumn, 
+	Priority, 
+	Chat, 
+	ChatDetails, 
+	ChatParticipant, 
+	Message, 
+	Attachment 
+};

@@ -10,10 +10,8 @@ import {
   Request,
 } from '@nestjs/common';
 import { TeamsService } from './teams.service';
-import { CreateTeamDto } from './dto/create-team.dto';
-import { UpdateTeamDto } from './dto/update-team.dto';
+import { CreateTeamDto, UpdateTeamDto, InviteUserDto } from './dto/teams.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { InviteUserDto } from './dto/invite-user.dto';
 import { ClassSerializerInterceptor, UseInterceptors } from '@nestjs/common';
 
 @Controller('teams')
