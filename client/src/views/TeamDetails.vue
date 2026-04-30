@@ -18,11 +18,13 @@
 				<Button
 					label="New Task"
 					icon="pi pi-plus"
+					size="small"
 					@click="isCreateTaskDialogOpen = true"
 				/>
 				<RouterLink :to="`/teams/${teamId}/tasks`">
 					<Button
 						label="All Tasks"
+						size="small"
 						icon="pi pi-list"
 					/>
 				</RouterLink>
@@ -30,6 +32,7 @@
 					<Button
 						label="Manage Team"
 						icon="pi pi-users"
+						size="small"
 					/>
 				</RouterLink>
 			</nav>

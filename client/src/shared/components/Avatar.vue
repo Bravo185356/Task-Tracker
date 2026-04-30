@@ -1,9 +1,13 @@
 <template>
-	<div v-if="!url" class="w-[40px] h-[40px] rounded-full bg-zinc-700 flex items-center justify-center" />
+	<div 
+		v-if="!url" 
+		:style="{ width: `${size}px`, height: `${size}px` }"
+		class="rounded-full bg-zinc-700 flex items-center justify-center"
+	/>
 	<Avatar 
 		v-else 
 		:image="image" 
-		:pt="{ root: { class: `!w-[${size}px] !h-[${size}px]` } }" 
+		:pt="{ root: { style: { width: `${size}px`, height: `${size}px` } } }" 
 		shape="circle" 
 	/>
 </template>

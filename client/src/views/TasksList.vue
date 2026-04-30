@@ -29,7 +29,7 @@
 					<i class="pi pi-filter text-3xl" />
 					<span class="text-sm">No tasks match the selected filters</span>
 				</div>
-				<div v-else class="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-176px)] pr-1">
+				<div v-else class="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-192px)] pr-1">
 					<TaskCard v-for="task in tasks" :key="task.id" :task="task" />
 				</div>
 			</div>
@@ -68,6 +68,8 @@ const { data: tasks, isLoading: isInitialLoading, isFetching: isUpdatingTasks, e
 	queryKey: computed(() => ['tasks', teamId, activeFilters.value]),
 	queryFn: () => TasksAPI.getTasks(teamId, activeFilters.value),
 	placeholderData: keepPreviousData,
+	refetchOnMount: true,
+	staleTime: 0,
 });
 
 const { data: team, error: teamError } = useQuery({

@@ -16,7 +16,7 @@
 		:pt="{ body: { class: '!p-0 flex-1' }, root: { class: 'flex-1' }, content: { class: 'flex flex-col flex-1' } }"
 	>
 		<template #content>
-			<div class="flex max-h-[calc(100vh-124px)] flex-1 min-h-[60vh] flex-col md:flex-row border-1 border-zinc-700/50 rounded-xl">
+			<div class="flex max-h-[calc(100vh-140px)] flex-1 min-h-[60vh] flex-col md:flex-row border-1 border-zinc-700/50 rounded-xl">
 				<aside class="flex max-h-[40vh] shrink-0 flex-col md:max-h-none md:w-86 md:pe-0 md:border-r-1 md:border-r-zinc-700/50">
 					<div class="flex items-center h-[59px] justify-between gap-2 p-4 md:border-b-1 md:border-b-white max-md:border-b-1 border-b-white mb-4">
 						<div class="flex items-center gap-1">
