@@ -19,6 +19,8 @@ export class TasksService {
 				teamId: createTaskDto.teamId,
 				status: createTaskDto.status ? createTaskDto.status : TaskStatus.TODO,
 				...(createTaskDto.status && { status: createTaskDto.status }),
+				...(createTaskDto.startedAt !== undefined && { startedAt: createTaskDto.startedAt }),
+				...(createTaskDto.endedAt !== undefined && { endedAt: createTaskDto.endedAt }),
 			} 
 		});
 		

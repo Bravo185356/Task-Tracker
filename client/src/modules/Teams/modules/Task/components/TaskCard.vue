@@ -37,7 +37,7 @@
 				</div>
 				<footer class="mt-auto flex items-center gap-2 text-xs text-zinc-400">
 					<i class="pi pi-calendar" />
-					<span>{{ createdAtLabel }}</span>
+					<span>{{ dueDateLabel }}</span>
 				</footer>
 			</article>
 		</template>
@@ -76,7 +76,13 @@ const assignedUser = computed(() => {
 	return team!.members.find((member) => member.userId === props.task.assignedTo);
 });
 
-const createdAtLabel = computed(() => {
-	return new Date(props.task.createdAt).toLocaleDateString();
+const dueDateLabel = computed(() => {
+	if (!props.task.startedAt && !props.task.endedAt) {
+		return '-';
+	} else if(!props.task.startedAt || !props.task.endedAt) {
+		return new Date(props.task.startedAt || props.task.endedAt!).toLocaleDateString();
+	} else {
+		return `${new Date(props.task.startedAt!).toLocaleDateString()} - ${new Date(props.task.endedAt!).toLocaleDateString()}`;
+	}
 });
 </script>

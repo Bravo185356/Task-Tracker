@@ -70,6 +70,8 @@ model Task {
   assignedTo  String?  @map("assigned_to")
   boardId     String?  @map("board_id")
   teamId      String   @map("team_id")
+  startedAt   DateTime? @map("started_at")
+  endedAt     DateTime? @map("ended_at")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
   order       Int?      

@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty, IsUUID, IsOptional, IsEnum } from 'class-validator';
-import { Expose } from 'class-transformer';
+import { IsString, IsNotEmpty, IsUUID, IsOptional, IsEnum, IsDate } from 'class-validator';
+import { Expose, Type } from 'class-transformer';
 import { Priority, TaskStatus } from '@prisma/client';
 
 export class GetTasksQueryDto {
@@ -39,6 +39,14 @@ export class CreateTaskDto {
 	@IsOptional()
 	@IsString()
 	status?: TaskStatus;
+	@IsOptional()
+	@Type(() => Date)
+	@IsString()
+	startedAt?: Date | null;
+	@IsOptional()
+	@Type(() => Date)
+	@IsString()
+	endedAt?: Date | null;
 }
 
 export class UpdateTaskDto {
@@ -54,6 +62,14 @@ export class UpdateTaskDto {
 	@IsOptional()
 	@IsString()
 	status?: TaskStatus;
+	@IsOptional()
+	@Type(() => Date)
+	@IsDate()
+	startedAt?: Date | null;
+	@IsOptional()
+	@Type(() => Date)
+	@IsDate()
+	endedAt?: Date | null;
 }
 
 export class PatchTaskDto {
@@ -73,6 +89,14 @@ export class PatchTaskDto {
 	@IsOptional()
 	@IsUUID()
 	assignedTo?: string;
+	@IsOptional()
+	@Type(() => Date)
+	@IsDate()
+	startedAt?: Date | null;
+	@IsOptional()
+	@Type(() => Date)
+	@IsDate()
+	endedAt?: Date | null;
 }
 
 export class UserResponseDto {
@@ -94,5 +118,7 @@ export class UserResponseDto {
 	@Expose() priority?: Priority;
 	@Expose() createdAt: Date;
 	@Expose() updatedAt: Date;
+	@Expose() startedAt?: Date | null;
+	@Expose() endedAt?: Date | null;
 	@Expose() @IsUUID() assignedTo?: string;
   }

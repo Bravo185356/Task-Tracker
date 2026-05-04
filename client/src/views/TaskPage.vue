@@ -184,7 +184,7 @@
 			</div>
 
 			<div class="space-y-6">
-				<TaskDetails :task="task" />
+				<TaskDetails :task="task" @patchTask="patchTask" />
 				<Card>
 					<template #content>
 						<div class="space-y-3">

@@ -62,6 +62,8 @@ interface Task {
 	updatedAt: string;
 	order: number | null;
 	priority: Priority;
+	startedAt: string | null;
+	endedAt: string | null;
 }
 
 interface Chat {
