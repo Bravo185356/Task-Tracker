@@ -1,8 +1,8 @@
 <template>
-	<div v-if="isLoading" class="flex justify-center items-center min-h-96">
+	<div v-if="isLoading" class="flex flex-1 justify-center items-center min-h-96">
 		<ProgressSpinner />
 	</div>
-	<div v-else-if="task" class="min-h-screen pb-8">
+	<div v-else-if="task" class="flex-1">
 		<div class="mb-6">
 			<div class="flex items-center gap-3 mb-4">
 				<router-link :to="`/teams/${teamId}`">
@@ -48,9 +48,7 @@
 									</div>
 								</div>
 							</div>
-
 							<Divider class="!border-zinc-700/50" />
-
 							<div>
 								<div class="flex items-center justify-between mb-3">
 									<h3 class="text-lg font-semibold text-zinc-200">Description</h3>
@@ -67,53 +65,11 @@
 									/>
 								</div>
 							</div>
-						</div>
-						<div class="mt-2">
-							<label class="block text-lg font-semibold text-zinc-200 mb-3">Attachments</label>
-							<div class="flex gap-2">
-								<div class="flex items-center gap-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-700/50 hover:border-zinc-600/50 transition-colors cursor-pointer">
-									<div class="w-10 h-10 rounded bg-blue-500/20 flex items-center justify-center">
-										<i class="pi pi-file text-blue-400" />
-									</div>
-									<div class="flex-1 min-w-0">
-										<p class="text-white text-sm font-medium truncate">
-											auth-flow-diagram.png
-										</p>
-										<p class="text-zinc-500 text-xs">
-											2.4 MB
-										</p>
-									</div>
-									<Button
-										icon="pi pi-download"
-										text
-										size="small"
-										class="text-zinc-400 hover:text-white"
-									/>
-								</div>
-								<div class="flex items-center gap-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-700/50 hover:border-zinc-600/50 transition-colors cursor-pointer">
-									<div class="w-10 h-10 rounded bg-purple-500/20 flex items-center justify-center">
-										<i class="pi pi-file-pdf text-purple-400" />
-									</div>
-									<div class="flex-1 min-w-0">
-										<p class="text-white text-sm font-medium truncate">
-											requirements.pdf
-										</p>
-										<p class="text-zinc-500 text-xs">
-											856 KB
-										</p>
-									</div>
-									<Button
-										icon="pi pi-download"
-										text
-										size="small"
-										class="text-zinc-400 hover:text-white"
-									/>
-								</div>
-							</div>
+							<Divider class="!border-zinc-700/50" />
+							<TaskAttachments :task="task" />
 						</div>
 					</template>
 				</Card>
-
 				<Card>
 					<template #content>
 						<div class="space-y-4">
@@ -182,7 +138,6 @@
 					</template>
 				</Card>
 			</div>
-
 			<div class="space-y-6">
 				<TaskDetails :task="task" @patchTask="patchTask" />
 				<Card>
@@ -226,6 +181,7 @@ import { useQuery, useMutation } from '@tanstack/vue-query';
 import { TaskDetails, taskStatuses, useTaskDetailsWs, TasksAPI } from '@/modules/Teams';
 import { useDebouncedField } from '@/shared/composables/useDebouncedField';
 import { useToast } from 'primevue/usetoast';
+import { TaskAttachments } from '@/modules/Teams';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import Avatar from 'primevue/avatar';

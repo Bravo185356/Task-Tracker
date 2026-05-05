@@ -23,6 +23,16 @@ export class TasksAPI {
 		return httpClient.patch<Task>(`/tasks/${taskId}`, data);
 	}
 
+	static async uploadAttachments(taskId: string, files: File[]): Promise<Task> {
+		const formData = new FormData();
+		files.forEach((file) => formData.append('files', file));
+		return httpClient.postForm<Task>(`/tasks/${taskId}/attachments`, formData);
+	}
+
+	static async deleteAttachment(taskId: string, attachmentId: string): Promise<Task> {
+		return httpClient.delete<Task>(`/tasks/${taskId}/attachments/${attachmentId}`);
+	}
+
 	static async deleteTask(taskId: string): Promise<{ id: string }> {
 		return httpClient.delete(`/tasks/${taskId}`);
 	}

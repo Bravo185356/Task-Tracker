@@ -1,5 +1,5 @@
 <template>
-	<Card class="sticky top-[108px] w-86 max-h-[calc(100vh-124px)] overflow-y-auto shrink-0" :pt="{ body: { class: '!px-0' } }">
+	<Card class="w-86 min-h-[calc(100vh-140px)] overflow-y-auto shrink-0" :pt="{ body: { class: '!px-0' } }">
 		<template #content>
 			<div>
 				<div class="flex justify-between items-center mb-2 pl-4">

@@ -79,8 +79,22 @@ model Task {
   assigned    User?    @relation(fields: [assignedTo], references: [id], onDelete: Cascade)
   team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   priority    Priority?
+  attachments TaskAttachment[]
 
   @@map("tasks")
+}
+
+model TaskAttachment {
+  id               String @id @default(uuid())
+  taskId           String @map("task_id")
+  storedFileName   String @map("stored_file_name")
+  originalFileName String @map("original_file_name")
+  mimeType         String @map("mime_type")
+  sizeBytes        Int    @map("size_bytes")
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("task_attachments")
 }
 
 model Chat {

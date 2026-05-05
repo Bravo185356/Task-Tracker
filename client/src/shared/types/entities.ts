@@ -64,6 +64,7 @@ interface Task {
 	priority: Priority;
 	startedAt: string | null;
 	endedAt: string | null;
+	attachments: Attachment[];
 }
 
 interface Chat {

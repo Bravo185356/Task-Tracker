@@ -13,7 +13,7 @@
 		<div v-if="tasksError || teamError" class="flex justify-center items-center min-h-96">
 			<p class="text-zinc-400 text-sm">{{ tasksError?.message || teamError?.message }}</p>
 		</div>
-		<div v-else class="flex flex-row-reverse gap-6 items-start">
+		<div v-else class="flex flex-row-reverse flex-1 gap-6 items-start">
 			<TaskFilters
 				:filters="activeFilters"
 				:team="team"
@@ -29,7 +29,7 @@
 					<i class="pi pi-filter text-3xl" />
 					<span class="text-sm">No tasks match the selected filters</span>
 				</div>
-				<div v-else class="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-192px)] pr-1">
+				<div v-else class="flex flex-col gap-3 overflow-y-auto pr-1">
 					<TaskCard v-for="task in tasks" :key="task.id" :task="task" />
 				</div>
 			</div>

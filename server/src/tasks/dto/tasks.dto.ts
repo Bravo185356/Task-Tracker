@@ -108,7 +108,15 @@ export class UserResponseDto {
 	email: string;
   }
   
-  export class TaskResponseDto {
+export class TaskAttachmentResponseDto {
+	@Expose() id: string;
+	@Expose() url: string;
+	@Expose() originalFileName: string;
+	@Expose() mimeType: string;
+	@Expose() sizeBytes: number;
+}
+
+export class TaskResponseDto {
 	@Expose() id: string;
 	@Expose() title: string;
 	@Expose() description?: string;
@@ -121,4 +129,5 @@ export class UserResponseDto {
 	@Expose() startedAt?: Date | null;
 	@Expose() endedAt?: Date | null;
 	@Expose() @IsUUID() assignedTo?: string;
-  }
+	@Expose() @Type(() => TaskAttachmentResponseDto) attachments?: TaskAttachmentResponseDto[];
+}

@@ -12,7 +12,8 @@ export {
 	getPriorityTagClass, 
 	TaskFilters, 
 	TaskCard, 
-	TaskDetails 
+	TaskDetails,
+	TaskAttachments
 } from './modules/Task';
 export { 
 	ChatsAPI, 
@@ -31,3 +32,4 @@ export { default as TeamCard } from './components/TeamCard.vue';
 export { default as CreateTeamModal } from './components/CreateTeamModal.vue';
 export { default as CreateTaskModal } from './components/CreateTaskModal.vue';
 export { default as InviteUserModal } from './components/InviteUserModal.vue';
+export { default as MainPanel } from './components/MainPanel.vue';

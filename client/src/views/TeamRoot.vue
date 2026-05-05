@@ -12,12 +12,10 @@
 import { computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuery } from '@tanstack/vue-query';
-import { BoardsAPI, TeamsAPI, ChatsAPI, useTeamChatsWs } from '@/modules/Teams';
-import { useTeamsStore } from '@/modules/Teams';
+import { BoardsAPI, TeamsAPI, ChatsAPI, useTeamChatsWs, MainPanel, useTeamsStore } from '@/modules/Teams';
 import { useAuthStore } from '@/modules/Auth';
 import { useToast } from 'primevue/usetoast';
 import ProgressSpinner from 'primevue/progressspinner';
-import MainPanel from '@/modules/Teams/components/MainPanel.vue';
 
 const route = useRoute();
 const teamsStore = useTeamsStore();
