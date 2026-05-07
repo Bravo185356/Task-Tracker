@@ -56,7 +56,7 @@ import { useRoute } from 'vue-router';
 import { useQuery, useQueryClient } from '@tanstack/vue-query';
 import { useAuthStore } from '@/modules/Auth';
 import { ChatsAPI } from '../api/chats';
-import { getDateString } from '../utilities/getDateString';
+import { getDateString } from '@/shared/utilities/getDateString';
 import { useConfirm } from 'primevue/useconfirm';
 import Avatar from '@/shared/components/Avatar.vue';
 

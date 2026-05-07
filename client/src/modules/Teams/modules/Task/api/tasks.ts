@@ -36,4 +36,15 @@ export class TasksAPI {
 	static async deleteTask(taskId: string): Promise<{ id: string }> {
 		return httpClient.delete(`/tasks/${taskId}`);
 	}
+
+	static async createComment(taskId: string, body: string, files: File[]): Promise<Task> {
+		const formData = new FormData();
+		formData.append('body', body);
+		files.forEach((file) => formData.append('files', file));
+		return httpClient.postForm<Task>(`/tasks/${taskId}/comments`, formData);
+	}
+
+	static async deleteComment(taskId: string, commentId: string): Promise<Task> {
+		return httpClient.delete<Task>(`/tasks/${taskId}/comments/${commentId}`);
+	}
 }

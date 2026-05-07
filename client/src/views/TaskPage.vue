@@ -70,73 +70,7 @@
 						</div>
 					</template>
 				</Card>
-				<Card>
-					<template #content>
-						<div class="space-y-4">
-							<div class="flex items-center justify-between">
-								<h3 class="text-lg font-semibold text-zinc-200 flex items-center gap-2">
-									<i class="pi pi-comments text-zinc-400" />
-									Activity
-								</h3>
-								<div class="flex items-center gap-2">
-									<Button
-										label="Comments"
-										text
-										size="small"
-										class="text-zinc-400 hover:text-white"
-									/>
-									<Button
-										label="History"
-										text
-										size="small"
-										class="text-zinc-400 hover:text-white"
-									/>
-								</div>
-							</div>
-
-							<Divider class="!border-zinc-700/50" />
-
-							<div class="space-y-3">
-								<div class="flex gap-3">
-									<Avatar 
-										label="A"
-										size="normal"
-										shape="circle"
-										class="bg-gradient-to-br from-violet-500 to-purple-600 text-white font-bold flex-shrink-0"
-									/>
-									<div class="flex-1">
-										<Textarea
-											placeholder="Write a comment..."
-											rows="3"
-											class="w-full !bg-zinc-900/50 !border-zinc-700/50 !text-zinc-200 placeholder:text-zinc-500"
-										/>
-										<div class="flex justify-between items-center mt-2">
-											<div class="flex gap-2">
-												<Button
-													icon="pi pi-paperclip"
-													text
-													size="small"
-													class="text-zinc-400 hover:text-white"
-												/>
-												<Button
-													icon="pi pi-at"
-													text
-													size="small"
-													class="text-zinc-400 hover:text-white"
-												/>
-											</div>
-											<Button
-												label="Comment"
-												size="small"
-												class="!bg-blue-600 hover:!bg-blue-700 !border-blue-600"
-											/>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</template>
-				</Card>
+				<TaskComments :task="task" />
 			</div>
 			<div class="space-y-6">
 				<TaskDetails :task="task" @patchTask="patchTask" />
@@ -178,16 +112,13 @@ import type { Task } from '@/shared/types/entities';
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuery, useMutation } from '@tanstack/vue-query';
-import { TaskDetails, taskStatuses, useTaskDetailsWs, TasksAPI } from '@/modules/Teams';
+import { TaskDetails, taskStatuses, useTaskDetailsWs, TasksAPI, TaskComments, TaskAttachments } from '@/modules/Teams';
 import { useDebouncedField } from '@/shared/composables/useDebouncedField';
 import { useToast } from 'primevue/usetoast';
-import { TaskAttachments } from '@/modules/Teams';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
-import Avatar from 'primevue/avatar';
 import Tag from 'primevue/tag';
 import Divider from 'primevue/divider';
-import Textarea from 'primevue/textarea';
 import ProgressSpinner from 'primevue/progressspinner';
 import InputText from 'primevue/inputtext';
 

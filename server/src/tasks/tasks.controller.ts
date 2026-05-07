@@ -1,15 +1,16 @@
 import {
 	Controller, Post, Body, Get, Param, Put, Patch, Delete, Query,
-	UseInterceptors, UploadedFiles, BadRequestException,
+	UseInterceptors, UploadedFiles, BadRequestException, UseGuards, Request,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 import { mkdirSync } from 'fs';
-import { CreateTaskDto, UpdateTaskDto, PatchTaskDto, GetTasksQueryDto } from './dto/tasks.dto';
+import { CreateTaskDto, UpdateTaskDto, PatchTaskDto, GetTasksQueryDto, CreateTaskCommentDto } from './dto/tasks.dto';
 import { TasksService } from './tasks.service';
 import { SerializeOptions, ClassSerializerInterceptor } from '@nestjs/common';
 import { TaskResponseDto } from './dto/tasks.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 const MAX_FILES = 10;
 const MAX_FILE_BYTES = 25 * 1024 * 1024;
@@ -81,5 +82,37 @@ export class TasksController {
 	@Delete(':id')
 	async deleteTask(@Param('id') id: string) {
 		return this.tasksService.deleteTask(id);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Post(':id/comments')
+	@UseInterceptors(
+		FilesInterceptor('files', MAX_FILES, {
+			storage: diskStorage({
+				destination: (_req, _file, callback) => {
+					const dir = join(process.cwd(), 'uploads', 'task-comment-attachments');
+					mkdirSync(dir, { recursive: true });
+					callback(null, dir);
+				},
+				filename: (_req, file, callback) => {
+					callback(null, TasksService.makeStoredFileName(file.originalname));
+				},
+			}),
+			limits: { fileSize: MAX_FILE_BYTES },
+		}),
+	)
+	async createComment(
+		@Param('id') id: string,
+		@Body() dto: CreateTaskCommentDto,
+		@UploadedFiles() files: Express.Multer.File[] | undefined,
+		@Request() req: { user: { userId: string } },
+	) {
+		return this.tasksService.createComment(id, req.user.userId, dto, files ?? []);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Delete(':id/comments/:commentId')
+	async deleteComment(@Param('id') id: string, @Param('commentId') commentId: string) {
+		return this.tasksService.deleteComment(id, commentId);
 	}
 }

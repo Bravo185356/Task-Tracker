@@ -15,6 +15,7 @@ model User {
   avatar   String?
   teams    TeamMember[]
   assignedTasks Task[]
+  taskComments  TaskComment[]
   chatParticipations ChatParticipant[]
   messagesSent       Message[]
   chatsCreated       Chat[]            @relation("ChatCreator")
@@ -80,6 +81,7 @@ model Task {
   team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   priority    Priority?
   attachments TaskAttachment[]
+  comments    TaskComment[]
 
   @@map("tasks")
 }
@@ -95,6 +97,35 @@ model TaskAttachment {
   task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
   @@map("task_attachments")
+}
+
+model TaskComment {
+  id        String   @id @default(uuid())
+  taskId    String   @map("task_id")
+  authorId  String   @map("author_id")
+  body      String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  task        Task                    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author      User                    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  attachments TaskCommentAttachment[]
+
+  @@index([taskId, createdAt])
+  @@map("task_comments")
+}
+
+model TaskCommentAttachment {
+  id               String @id @default(uuid())
+  commentId        String @map("comment_id")
+  storedFileName   String @map("stored_file_name")
+  originalFileName String @map("original_file_name")
+  mimeType         String @map("mime_type")
+  sizeBytes        Int    @map("size_bytes")
+
+  comment TaskComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@map("task_comment_attachments")
 }
 
 model Chat {

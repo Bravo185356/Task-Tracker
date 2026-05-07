@@ -13,7 +13,8 @@ export {
 	TaskFilters, 
 	TaskCard, 
 	TaskDetails,
-	TaskAttachments
+	TaskAttachments,
+	TaskComments
 } from './modules/Task';
 export { 
 	ChatsAPI, 

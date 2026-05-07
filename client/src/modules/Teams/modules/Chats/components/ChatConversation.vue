@@ -59,14 +59,14 @@
 								<div v-if="attachment.id.startsWith('temp-')" class="w-[40px] h-[40px] rounded-xl border border-zinc-700/50 flex items-center justify-center">
 									<ProgressSpinner class="w-4 h-4" />
 								</div>
-							<img
-								v-else-if="attachment.mimeType.startsWith('image/')"
-								:src="getAttachmentUrl(attachment.url)"
-								:alt="attachment.originalFileName"
-								class="max-w-[220px] max-h-[220px] rounded-xl object-cover cursor-pointer"
-								@click="openAttachment(attachment.url)"
-								@load="handleScrollToBottom"
-							/>
+								<img
+									v-else-if="attachment.mimeType.startsWith('image/')"
+									:src="getAttachmentUrl(attachment.url)"
+									:alt="attachment.originalFileName"
+									class="max-w-[220px] max-h-[220px] rounded-xl object-cover cursor-pointer"
+									@click="openAttachment(attachment.url)"
+									@load="handleScrollToBottom"
+								/>
 								<a
 									v-else
 									:href="getAttachmentUrl(attachment.url)"
@@ -170,7 +170,7 @@ import { useChatScroll } from '../composables/useChatScroll';
 import { API_URL } from '@/app/config/api';
 import { useRoute } from 'vue-router';
 import { useQueryClient } from '@tanstack/vue-query';
-import { getDateString } from '../utilities/getDateString';
+import { getDateString } from '@/shared/utilities/getDateString';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';

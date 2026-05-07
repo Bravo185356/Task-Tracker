@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateTaskDto, UpdateTaskDto, PatchTaskDto, TaskResponseDto, GetTasksQueryDto } from './dto/tasks.dto';
+import { CreateTaskDto, UpdateTaskDto, PatchTaskDto, TaskResponseDto, GetTasksQueryDto, CreateTaskCommentDto } from './dto/tasks.dto';
 import { UnifiedWebsocketGateway } from '../websocket/unified/websocket.gateway';
 import { TaskStatus, Prisma } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
@@ -8,16 +8,28 @@ import { randomUUID } from 'crypto';
 import { basename, extname } from 'path';
 
 const ATTACHMENTS_PREFIX = '/uploads/task-attachments';
+const COMMENT_ATTACHMENTS_PREFIX = '/uploads/task-comment-attachments';
 
-type TaskWithAttachments = Prisma.TaskGetPayload<{
-	include: { attachments: true };
+const TASK_INCLUDE = {
+	attachments: true,
+	comments: {
+		include: {
+			author: { select: { id: true, username: true, avatar: true } },
+			attachments: true,
+		},
+		orderBy: { createdAt: 'asc' as const },
+	},
+} as const;
+
+type TaskWithRelations = Prisma.TaskGetPayload<{
+	include: typeof TASK_INCLUDE;
 }>;
 
 @Injectable()
 export class TasksService {
 	constructor(private readonly prisma: PrismaService, private readonly unifiedWsGateway: UnifiedWebsocketGateway) {}
 
-	private serializeTask(task: TaskWithAttachments) {
+	private serializeTask(task: TaskWithRelations) {
 		return {
 			...task,
 			attachments: task.attachments.map((attachment) => ({
@@ -26,6 +38,22 @@ export class TasksService {
 				originalFileName: attachment.originalFileName,
 				mimeType: attachment.mimeType,
 				sizeBytes: attachment.sizeBytes,
+			})),
+			comments: task.comments.map((comment) => ({
+				id: comment.id,
+				taskId: comment.taskId,
+				authorId: comment.authorId,
+				body: comment.body,
+				createdAt: comment.createdAt,
+				updatedAt: comment.updatedAt,
+				author: comment.author,
+				attachments: comment.attachments.map((attachment) => ({
+					id: attachment.id,
+					url: `${COMMENT_ATTACHMENTS_PREFIX}/${attachment.storedFileName}`,
+					originalFileName: attachment.originalFileName,
+					mimeType: attachment.mimeType,
+					sizeBytes: attachment.sizeBytes,
+				})),
 			})),
 		};
 	}
@@ -49,7 +77,7 @@ export class TasksService {
 				...(createTaskDto.startedAt !== undefined && { startedAt: createTaskDto.startedAt }),
 				...(createTaskDto.endedAt !== undefined && { endedAt: createTaskDto.endedAt }),
 			},
-			include: { attachments: true },
+			include: TASK_INCLUDE,
 		});
 		
 		this.unifiedWsGateway.emitTaskCreated(task);
@@ -60,7 +88,7 @@ export class TasksService {
 	async getTaskById(id: string) {
 		const task = await this.prisma.task.findUnique({
 			where: { id },
-			include: { attachments: true },
+			include: TASK_INCLUDE,
 		});
 
 		if (!task) {
@@ -87,7 +115,7 @@ export class TasksService {
 		const task = await this.prisma.task.update({
 			where: { id },
 			data: updateTaskDto,
-			include: { attachments: true },
+			include: TASK_INCLUDE,
 		});
 
 		this.unifiedWsGateway.emitTaskUpdated(this.serializeTask(task));
@@ -99,7 +127,7 @@ export class TasksService {
 		const task = await this.prisma.task.update({
 			where: { id },
 			data: patchTaskDto,
-			include: { attachments: true },
+			include: TASK_INCLUDE,
 		});
 
 		const serialized = this.serializeTask(task);
@@ -123,7 +151,7 @@ export class TasksService {
 
 		const task = await this.prisma.task.findUnique({
 			where: { id: taskId },
-			include: { attachments: true },
+			include: TASK_INCLUDE,
 		});
 
 		const serialized = this.serializeTask(task);
@@ -139,7 +167,56 @@ export class TasksService {
 
 		const task = await this.prisma.task.findUnique({
 			where: { id: taskId },
-			include: { attachments: true },
+			include: TASK_INCLUDE,
+		});
+
+		const serialized = this.serializeTask(task);
+		this.unifiedWsGateway.emitTaskUpdated(serialized);
+
+		return serialized;
+	}
+
+	async createComment(
+		taskId: string,
+		authorId: string,
+		dto: CreateTaskCommentDto,
+		files: { filename: string; originalname: string; mimetype: string; size: number }[],
+	) {
+		await this.prisma.taskComment.create({
+			data: {
+				taskId,
+				authorId,
+				body: dto.body,
+				attachments: {
+					create: files.map((file) => ({
+						storedFileName: file.filename,
+						originalFileName: basename(file.originalname) || file.filename,
+						mimeType: file.mimetype || 'application/octet-stream',
+						sizeBytes: file.size,
+					})),
+				},
+			},
+		});
+
+		const task = await this.prisma.task.findUnique({
+			where: { id: taskId },
+			include: TASK_INCLUDE,
+		});
+
+		const serialized = this.serializeTask(task);
+		this.unifiedWsGateway.emitTaskUpdated(serialized);
+
+		return serialized;
+	}
+
+	async deleteComment(taskId: string, commentId: string) {
+		await this.prisma.taskComment.delete({
+			where: { id: commentId, taskId },
+		});
+
+		const task = await this.prisma.task.findUnique({
+			where: { id: taskId },
+			include: TASK_INCLUDE,
 		});
 
 		const serialized = this.serializeTask(task);

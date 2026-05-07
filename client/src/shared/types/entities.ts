@@ -65,6 +65,7 @@ interface Task {
 	startedAt: string | null;
 	endedAt: string | null;
 	attachments: Attachment[];
+	comments: TaskComment[];
 }
 
 interface Chat {
@@ -100,6 +101,23 @@ interface Attachment {
 	sizeBytes: number;
 }
 
+interface TaskCommentAuthor {
+	id: string;
+	username: string;
+	avatar: string | null;
+}
+
+interface TaskComment {
+	id: string;
+	taskId: string;
+	authorId: string;
+	body: string;
+	createdAt: string;
+	updatedAt: string;
+	author: TaskCommentAuthor;
+	attachments: Attachment[];
+}
+
 interface Message {
 	id: string;
 	chatId: string;
@@ -123,5 +141,7 @@ export type {
 	ChatDetails, 
 	ChatParticipant, 
 	Message, 
-	Attachment 
+	Attachment,
+	TaskComment,
+	TaskCommentAuthor,
 };

@@ -2,6 +2,12 @@ import { IsString, IsNotEmpty, IsUUID, IsOptional, IsEnum, IsDate } from 'class-
 import { Expose, Type } from 'class-transformer';
 import { Priority, TaskStatus } from '@prisma/client';
 
+export class CreateTaskCommentDto {
+	@IsString()
+	@IsNotEmpty()
+	body: string;
+}
+
 export class GetTasksQueryDto {
 	@IsOptional()
 	@IsString()
@@ -108,12 +114,29 @@ export class UserResponseDto {
 	email: string;
   }
   
-export class TaskAttachmentResponseDto {
+export class TaskAttachment {
 	@Expose() id: string;
 	@Expose() url: string;
 	@Expose() originalFileName: string;
 	@Expose() mimeType: string;
 	@Expose() sizeBytes: number;
+}
+
+export class CommentAuthorResponseDto {
+	@Expose() id: string;
+	@Expose() username: string;
+	@Expose() avatar: string | null;
+}
+
+export class TaskCommentResponseDto {
+	@Expose() id: string;
+	@Expose() taskId: string;
+	@Expose() authorId: string;
+	@Expose() body: string;
+	@Expose() createdAt: Date;
+	@Expose() updatedAt: Date;
+	@Expose() @Type(() => CommentAuthorResponseDto) author: CommentAuthorResponseDto;
+	@Expose() @Type(() => TaskAttachment) attachments: TaskAttachment[];
 }
 
 export class TaskResponseDto {
@@ -129,5 +152,6 @@ export class TaskResponseDto {
 	@Expose() startedAt?: Date | null;
 	@Expose() endedAt?: Date | null;
 	@Expose() @IsUUID() assignedTo?: string;
-	@Expose() @Type(() => TaskAttachmentResponseDto) attachments?: TaskAttachmentResponseDto[];
+	@Expose() @Type(() => TaskAttachment) attachments?: TaskAttachment[];
+	@Expose() @Type(() => TaskCommentResponseDto) comments?: TaskCommentResponseDto[];
 }
