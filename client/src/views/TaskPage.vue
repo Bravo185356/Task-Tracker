@@ -121,6 +121,7 @@ import Tag from 'primevue/tag';
 import Divider from 'primevue/divider';
 import ProgressSpinner from 'primevue/progressspinner';
 import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
 
 const route = useRoute();
 const toast = useToast();
