@@ -21,8 +21,14 @@ export class EventEmitterService {
 		this.logger.log(`Task ${task.id} created in team ${task.teamId}`);
 	}
 
-	emitTaskUpdated(task: TaskEventDto): void {
-		this.server.to(`taskDetails:${task.id}`).emit('taskDetails:updated', task);
+	emitTaskUpdated(task: TaskEventDto, excludeUserId?: string): void {
+		const room = this.server.to(`taskDetails:${task.id}`);
+    
+		if (excludeUserId) {
+			room.except(`user:${excludeUserId}`).emit('taskDetails:updated', task);
+		} else {
+			room.emit('taskDetails:updated', task);
+		}
 		
 		if (task.boardId) {
 			this.server.to(`board:${task.boardId}`).emit('board:task:updated', task);

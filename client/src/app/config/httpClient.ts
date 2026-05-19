@@ -138,10 +138,11 @@ class HttpClient {
 		return this.request<T>(endpoint, { method: 'GET' });
 	}
 
-	patch<T>(endpoint: string, data: unknown): Promise<T> {
+	patch<T>(endpoint: string, data: unknown, headers?: Record<string, string>): Promise<T> {
 		return this.request<T>(endpoint, {
 			method: 'PATCH',
 			body: JSON.stringify(data),
+			headers,
 		});
 	}
 

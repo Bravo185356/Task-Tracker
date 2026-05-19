@@ -39,12 +39,12 @@
 								<div class="flex items-center gap-4 text-sm text-zinc-400">
 									<div class="flex items-center gap-2">
 										<i class="pi pi-calendar text-zinc-500" />
-										<span>Created: {{ task?.createdAt }}</span>
+										<span>Created - {{ getDateString(task?.createdAt) }}</span>
 									</div>
 									<span>•</span>
 									<div class="flex items-center gap-2">
 										<i class="pi pi-clock text-zinc-500" />
-										<span>Updated: {{ task?.updatedAt }}</span>
+										<span>Last Updated - {{ getDateString(task?.updatedAt) }}</span>
 									</div>
 								</div>
 							</div>
@@ -111,10 +111,11 @@
 import type { Task } from '@/shared/types/entities';
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useQuery, useMutation } from '@tanstack/vue-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import { TaskDetails, taskStatuses, useTaskDetailsWs, TasksAPI, TaskComments, TaskAttachments } from '@/modules/Teams';
 import { useDebouncedField } from '@/shared/composables/useDebouncedField';
 import { useToast } from 'primevue/usetoast';
+import { getDateString } from '@/shared/utilities/getDateString';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
@@ -126,6 +127,7 @@ import Textarea from 'primevue/textarea';
 const route = useRoute();
 const toast = useToast();
 const router = useRouter();
+const queryClient = useQueryClient();
 
 const teamId = route.params.teamId as string;
 const taskId = route.params.taskId as string;
@@ -139,6 +141,7 @@ useTaskDetailsWs(taskId);
 
 const { mutate: patchTask } = useMutation({
 	mutationFn: (data: Partial<Task>) => TasksAPI.patchTask(taskId, data),
+	onSuccess: (updatedTask) => queryClient.setQueryData(['task', taskId], updatedTask),
 });
 
 const { setValue: setTitle } = useDebouncedField({

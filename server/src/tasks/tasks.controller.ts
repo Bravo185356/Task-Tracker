@@ -27,6 +27,7 @@ const taskAttachmentsStorage = diskStorage({
 });
 
 @Controller('tasks')
+@UseGuards(JwtAuthGuard)
 export class TasksController {
 	constructor(private readonly tasksService: TasksService) {}
 
@@ -53,8 +54,12 @@ export class TasksController {
 
 	@UseInterceptors(ClassSerializerInterceptor)
 	@Patch(':id')
-	async patchTask(@Param('id') id: string, @Body() patchTaskDto: PatchTaskDto) {
-		return this.tasksService.patchTask(id, patchTaskDto);
+	async patchTask(
+		@Param('id') id: string, 
+		@Body() patchTaskDto: PatchTaskDto, 
+		@Request() req: { user: { userId: string } },
+	) {
+		return this.tasksService.patchTask(id, patchTaskDto, req.user.userId);
 	}
 
 	@Post(':id/attachments')

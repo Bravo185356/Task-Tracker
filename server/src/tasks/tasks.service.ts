@@ -123,7 +123,7 @@ export class TasksService {
 		return task;
 	}
 	
-	async patchTask(id: string, patchTaskDto: PatchTaskDto) {
+	async patchTask(id: string, patchTaskDto: PatchTaskDto, userId: string) {
 		const task = await this.prisma.task.update({
 			where: { id },
 			data: patchTaskDto,
@@ -131,7 +131,7 @@ export class TasksService {
 		});
 
 		const serialized = this.serializeTask(task);
-		this.unifiedWsGateway.emitTaskUpdated(serialized);
+		this.unifiedWsGateway.emitTaskUpdated(serialized, userId);
 
 		return plainToInstance(TaskResponseDto, serialized, { 
 			excludeExtraneousValues: true

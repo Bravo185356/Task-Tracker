@@ -4,7 +4,6 @@ import {
   Get,
   Param,
   Post,
-  Query,
   Request,
   UploadedFiles,
   UseGuards,

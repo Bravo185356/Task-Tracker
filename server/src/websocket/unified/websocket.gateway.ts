@@ -128,8 +128,8 @@ export class UnifiedWebsocketGateway implements OnGatewayConnection, OnGatewayDi
     this.eventEmitter.emitTaskCreated(task);
   }
 
-  emitTaskUpdated(task: TaskEventDto): void {
-    this.eventEmitter.emitTaskUpdated(task);
+  emitTaskUpdated(task: TaskEventDto, userId?: string): void {
+    this.eventEmitter.emitTaskUpdated(task, userId);
   }
 
   emitTaskDeleted(boardId: string | null, taskId: string): void {
