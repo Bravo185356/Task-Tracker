@@ -55,29 +55,6 @@ export class CreateTaskDto {
 	endedAt?: Date | null;
 }
 
-export class UpdateTaskDto {
-	@IsString()
-	@IsNotEmpty()
-	title: string;
-	@IsOptional()
-	@IsString()
-	description?: string;
-	@IsOptional()
-	@IsUUID()
-	assignedTo?: string;
-	@IsOptional()
-	@IsString()
-	status?: TaskStatus;
-	@IsOptional()
-	@Type(() => Date)
-	@IsDate()
-	startedAt?: Date | null;
-	@IsOptional()
-	@Type(() => Date)
-	@IsDate()
-	endedAt?: Date | null;
-}
-
 export class PatchTaskDto {
 	@IsOptional()
 	@IsString()

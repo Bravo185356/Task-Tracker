@@ -14,10 +14,6 @@ export class TasksAPI {
 	static async getTaskById(taskId: string): Promise<Task> {
 		return httpClient.get(`/tasks/${taskId}`);
 	}
-	
-	static async updateTask(taskId: string, data: Partial<Task>) {
-		return httpClient.put<Task>(`/tasks/${taskId}`, data);
-	}
 
 	static async patchTask(taskId: string, data: Partial<Task>): Promise<Task> {
 		return httpClient.patch<Task>(`/tasks/${taskId}`, data);

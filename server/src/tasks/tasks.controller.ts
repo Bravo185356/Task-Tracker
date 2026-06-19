@@ -1,10 +1,10 @@
 import {
-	Controller, Post, Body, Get, Param, Put, Patch, Delete, Query,
+	Controller, Post, Body, Get, Param, Patch, Delete, Query,
 	UseInterceptors, UploadedFiles, BadRequestException, UseGuards, Request,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
-import { CreateTaskDto, UpdateTaskDto, PatchTaskDto, GetTasksQueryDto, CreateTaskCommentDto } from './dto/tasks.dto';
+import { CreateTaskDto, PatchTaskDto, GetTasksQueryDto, CreateTaskCommentDto } from './dto/tasks.dto';
 import { TasksService } from './tasks.service';
 import { SerializeOptions, ClassSerializerInterceptor } from '@nestjs/common';
 import { TaskResponseDto } from './dto/tasks.dto';
@@ -36,11 +36,6 @@ export class TasksController {
 	@Post()
 	async createTask(@Body() createTaskDto: CreateTaskDto) {
 		return this.tasksService.createTask(createTaskDto);
-	}
-
-	@Put(':id')
-	async updateTask(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-		return this.tasksService.updateTask(id, updateTaskDto);
 	}
 
 	@UseInterceptors(ClassSerializerInterceptor)
