@@ -6,25 +6,17 @@
 	/>
 	<Avatar 
 		v-else 
-		:image="image" 
+		:image="url" 
 		:pt="{ root: { style: { width: `${size}px`, height: `${size}px` } } }" 
 		shape="circle" 
 	/>
 </template>
 
 <script setup lang="ts">
-import { API_URL } from '@/app/config/api';
-import { computed } from 'vue';
 import Avatar from 'primevue/avatar';
 
-const props = withDefaults(defineProps<{
+const { url, size = 40 } = defineProps<{
 	url: string | null;
-	size?: number
-}>(), {
-	size: 40,
-});
-
-const image = computed(() => {
-	return `${API_URL}${props.url}`;
-});
+	size?: number;
+}>();
 </script>

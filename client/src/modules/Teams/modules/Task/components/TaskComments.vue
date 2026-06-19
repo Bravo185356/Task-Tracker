@@ -41,7 +41,7 @@
 							<ul v-if="comment.attachments?.length" class="flex flex-wrap gap-2 mt-2 list-none p-0 m-0">
 								<li v-for="attachment in comment.attachments" :key="attachment.id">
 									<a
-										:href="API_URL + attachment.url"
+										:href="attachment.url"
 										target="_blank"
 										rel="noopener noreferrer"
 										class="flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 bg-zinc-800/60 border border-zinc-700/40 rounded px-2 py-1 transition-colors"
@@ -121,7 +121,6 @@
 import type { Task } from '@/shared/types/entities';
 import { ref } from 'vue';
 import { useAuthStore } from '@/modules/Auth';
-import { API_URL } from '@/app/config/api';
 import { useMutation } from '@tanstack/vue-query';
 import { TasksAPI } from '../api/tasks';
 import { useToast } from 'primevue/usetoast';

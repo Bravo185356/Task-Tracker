@@ -3,33 +3,24 @@ import {
 	UseInterceptors, UploadedFiles, BadRequestException, UseGuards, Request,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { join } from 'path';
-import { mkdirSync } from 'fs';
+import { memoryStorage } from 'multer';
 import { CreateTaskDto, UpdateTaskDto, PatchTaskDto, GetTasksQueryDto, CreateTaskCommentDto } from './dto/tasks.dto';
 import { TasksService } from './tasks.service';
 import { SerializeOptions, ClassSerializerInterceptor } from '@nestjs/common';
 import { TaskResponseDto } from './dto/tasks.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CloudinaryService } from '../storage/cloudinary.service';
 
 const MAX_FILES = 10;
 const MAX_FILE_BYTES = 25 * 1024 * 1024;
 
-const taskAttachmentsStorage = diskStorage({
-	destination: (_req, _file, callback) => {
-		const dir = join(process.cwd(), 'uploads', 'task-attachments');
-		mkdirSync(dir, { recursive: true });
-		callback(null, dir);
-	},
-	filename: (_req, file, callback) => {
-		callback(null, TasksService.makeStoredFileName(file.originalname));
-	},
-});
-
 @Controller('tasks')
 @UseGuards(JwtAuthGuard)
 export class TasksController {
-	constructor(private readonly tasksService: TasksService) {}
+	constructor(
+		private readonly tasksService: TasksService,
+		private readonly cloudinaryService: CloudinaryService,
+	) {}
 
 	@Get('/team/:teamId')
 	async getTasksByTeamId(@Param('teamId') teamId: string, @Query() query: GetTasksQueryDto) {
@@ -65,7 +56,7 @@ export class TasksController {
 	@Post(':id/attachments')
 	@UseInterceptors(
 		FilesInterceptor('files', MAX_FILES, {
-			storage: taskAttachmentsStorage,
+			storage: memoryStorage(),
 			limits: { fileSize: MAX_FILE_BYTES },
 		}),
 	)
@@ -75,8 +66,10 @@ export class TasksController {
 		if (list.length === 0) {
 			throw new BadRequestException('At least one file is required');
 		}
+
+		const uploaded = await this.cloudinaryService.uploadFiles(list, 'task-attachments');
 		
-		return this.tasksService.addAttachments(id, list);
+		return this.tasksService.addAttachments(id, uploaded);
 	}
 
 	@Delete(':id/attachments/:attachmentId')
@@ -93,16 +86,7 @@ export class TasksController {
 	@Post(':id/comments')
 	@UseInterceptors(
 		FilesInterceptor('files', MAX_FILES, {
-			storage: diskStorage({
-				destination: (_req, _file, callback) => {
-					const dir = join(process.cwd(), 'uploads', 'task-comment-attachments');
-					mkdirSync(dir, { recursive: true });
-					callback(null, dir);
-				},
-				filename: (_req, file, callback) => {
-					callback(null, TasksService.makeStoredFileName(file.originalname));
-				},
-			}),
+			storage: memoryStorage(),
 			limits: { fileSize: MAX_FILE_BYTES },
 		}),
 	)
@@ -112,7 +96,12 @@ export class TasksController {
 		@UploadedFiles() files: Express.Multer.File[] | undefined,
 		@Request() req: { user: { userId: string } },
 	) {
-		return this.tasksService.createComment(id, req.user.userId, dto, files ?? []);
+		const list = files ?? [];
+		const uploaded = list.length > 0
+			? await this.cloudinaryService.uploadFiles(list, 'task-comment-attachments')
+			: [];
+
+		return this.tasksService.createComment(id, req.user.userId, dto, uploaded);
 	}
 
 	@UseGuards(JwtAuthGuard)

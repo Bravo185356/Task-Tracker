@@ -61,7 +61,7 @@
 								</div>
 								<img
 									v-else-if="attachment.mimeType.startsWith('image/')"
-									:src="getAttachmentUrl(attachment.url)"
+									:src="attachment.url"
 									:alt="attachment.originalFileName"
 									class="max-w-[220px] max-h-[220px] rounded-xl object-cover cursor-pointer"
 									@click="openAttachment(attachment.url)"
@@ -69,7 +69,7 @@
 								/>
 								<a
 									v-else
-									:href="getAttachmentUrl(attachment.url)"
+									:href="attachment.url"
 									target="_blank"
 									class="flex items-center gap-1.5 border border-zinc-700/50 rounded-xl px-2.5 py-1.5 text-xs transition-colors"
 								>
@@ -167,7 +167,6 @@ import type { Message, Chat, Team } from '@/shared/types/entities';
 import { ref, computed, toRef, onUnmounted } from 'vue';
 import { useFileUpload } from '@/shared/composables/useFileUpload';
 import { useChatScroll } from '../composables/useChatScroll';
-import { API_URL } from '@/app/config/api';
 import { useRoute } from 'vue-router';
 import { useQueryClient } from '@tanstack/vue-query';
 import { getDateString } from '@/shared/utilities/getDateString';
@@ -233,8 +232,7 @@ const chatName = computed(() => {
 	}
 });
 
-const openAttachment = (url: string) => window.open(getAttachmentUrl(url), '_blank');
-const getAttachmentUrl = (url: string) => `${API_URL}${url}`;
+const openAttachment = (url: string) => window.open(url, '_blank');
 
 const getAuthorName = (authorId: string) => {
 	return teamMembersById.value.get(authorId)?.username ?? 'Unknown user';

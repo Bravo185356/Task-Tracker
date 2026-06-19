@@ -8,10 +8,8 @@ import { ChatType, Message } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventEmitterService } from '../websocket/services/event-emitter.service';
 import { CreateChatDto } from './dto/create-chat.dto';
-import { randomUUID } from 'crypto';
-import { basename, extname } from 'path';
-
-const ATTACHMENT_PUBLIC_PREFIX = '/uploads/chat-attachments';
+import { basename } from 'path';
+import type { UploadedFileMeta } from '../storage/cloudinary.service';
 
 export type SerializedAttachment = {
   id: string;
@@ -91,7 +89,7 @@ export class ChatsService {
   }): SerializedAttachment {
     return {
       id: row.id,
-      url: `${ATTACHMENT_PUBLIC_PREFIX}/${row.storedFileName}`,
+      url: row.storedFileName,
       originalFileName: row.originalFileName,
       mimeType: row.mimeType,
       sizeBytes: row.sizeBytes,
@@ -397,7 +395,7 @@ export class ChatsService {
     chatId: string,
     userId: string,
     body: string | undefined,
-    files: Array<{ filename: string; originalname: string; mimetype: string; size: number }>,
+    files: UploadedFileMeta[],
   ) {
     await this.assertTeamMember(teamId, userId);
     await this.assertChatInTeam(teamId, chatId);
@@ -416,8 +414,8 @@ export class ChatsService {
           body: trimmed || null,
           attachments: {
             create: files.map((f) => ({
-              storedFileName: f.filename,
-              originalFileName: basename(f.originalname) || f.filename,
+              storedFileName: f.url,
+              originalFileName: basename(f.originalname) || f.url,
               mimeType: f.mimetype || 'application/octet-stream',
               sizeBytes: f.size,
             })),
@@ -472,12 +470,5 @@ export class ChatsService {
     });
 
     return { lastReadAt: iso };
-  }
-
-  /** Имя файла для Multer (без path traversal) */
-  static makeStoredFileName(originalname: string): string {
-    const base = basename(originalname).replace(/[^a-zA-Z0-9._-]/g, '_');
-    const ext = extname(base) || extname(originalname) || '';
-    return `${randomUUID()}${ext}`.slice(0, 220);
   }
 }

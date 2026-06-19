@@ -31,7 +31,7 @@
 				>
 					<Image
 						v-if="attachment.mimeType.startsWith('image/')"
-						:src="API_URL + attachment.url"
+						:src="attachment.url"
 						:alt="attachment.originalFileName"
 						class="w-full h-full object-cover"
 						preview
@@ -61,7 +61,6 @@
 import type { Task, Attachment } from '@/shared/types/entities';
 import { useFileUpload } from '@/shared/composables/useFileUpload';
 import { useToast } from 'primevue/usetoast';
-import { API_URL } from '@/app/config/api';
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import { TasksAPI } from '../api/tasks';
 import { useRoute } from 'vue-router';
@@ -120,6 +119,6 @@ const openAttachment = (attachment: Attachment) => {
 		return;
 	}
 	
-	window.open(API_URL + attachment.url, '_blank');
+	window.open(attachment.url, '_blank');
 };
 </script>

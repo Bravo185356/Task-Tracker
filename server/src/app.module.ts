@@ -8,6 +8,7 @@ import { BoardsModule } from './boards/boards.module';
 import { TasksModule } from './tasks/tasks.module';
 import { UnifiedWebsocketModule } from './websocket/unified/websocket.module';
 import { ChatsModule } from './chats/chats.module';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ChatsModule } from './chats/chats.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    StorageModule,
     PrismaModule,
     AuthModule,
     UsersModule,

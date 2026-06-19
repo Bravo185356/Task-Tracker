@@ -34,5 +34,3 @@ lerna-debug.log*
 
 prisma/migrations/
 
-/uploads
-

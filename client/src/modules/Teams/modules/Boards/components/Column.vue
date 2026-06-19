@@ -99,7 +99,7 @@ const columnTasks = computed(() => {
 });
 
 const { mutate: updateBoard } = useMutation({
-	mutationFn: (task: Task) => TasksAPI.updateTask(task.id, task),
+	mutationFn: (task: Task) => TasksAPI.patchTask(task.id, task),
 	onSuccess: (updatedTask) => {
 		queryClient.setQueryData(['board', props.board.id], (board: Board) => {
 			return { ...board, tasks: board.tasks.map(t => t.id === updatedTask.id ? updatedTask : t) };

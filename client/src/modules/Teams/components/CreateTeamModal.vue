@@ -23,12 +23,14 @@
 					label="Cancel"
 					severity="secondary"
 					@click="handleClose"
+					fluid
 				/>
 				<Button
 					label="Create"
 					:disabled="!teamName.trim() || isPending"
 					:loading="isPending"
 					@click="handleCreate"
+					fluid
 				/>
 			</div>
 		</div>

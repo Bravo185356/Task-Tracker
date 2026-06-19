@@ -12,31 +12,20 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname, join } from 'path';
-import { mkdirSync } from 'fs';
-import { randomUUID } from 'crypto';
+import { memoryStorage } from 'multer';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
+import { CloudinaryService } from '../storage/cloudinary.service';
 
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
 const ALLOWED_AVATAR_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
-const avatarsStorage = diskStorage({
-  destination: (_req, _file, cb) => {
-    const dir = join(process.cwd(), 'uploads', 'avatars');
-    mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (_req, file, cb) => {
-    const extension = extname(file.originalname).toLowerCase();
-    cb(null, `${randomUUID()}${extension}`);
-  },
-});
-
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   private setCookies(res: Response, accessToken: string, refreshToken: string) {
     const isProduction = process.env.NODE_ENV === 'production';
@@ -78,7 +67,7 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(
     FileInterceptor('avatar', {
-      storage: avatarsStorage,
+      storage: memoryStorage(),
       limits: { fileSize: MAX_AVATAR_BYTES },
       fileFilter: (_req, file, cb) => {
         if (!ALLOWED_AVATAR_MIME_TYPES.has(file.mimetype)) {
@@ -93,12 +82,15 @@ export class AuthController {
     @UploadedFile() avatar: Express.Multer.File | undefined,
     @Res({ passthrough: true }) res: Response
   ) {
-    const avatarPath = avatar ? `/uploads/avatars/${avatar.filename}` : undefined;
+    const avatarUrl = avatar
+      ? await this.cloudinaryService.uploadFile(avatar, 'avatars')
+      : undefined;
+
     const result = await this.authService.register(
       body.email,
       body.password,
       body.username,
-      avatarPath,
+      avatarUrl,
     );
     this.setCookies(res, result.accessToken, result.refreshToken);
     
@@ -160,4 +152,3 @@ export class AuthController {
     };
   }
 }
-

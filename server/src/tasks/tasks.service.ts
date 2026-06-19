@@ -4,11 +4,8 @@ import { CreateTaskDto, UpdateTaskDto, PatchTaskDto, TaskResponseDto, GetTasksQu
 import { UnifiedWebsocketGateway } from '../websocket/unified/websocket.gateway';
 import { TaskStatus, Prisma } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
-import { randomUUID } from 'crypto';
-import { basename, extname } from 'path';
-
-const ATTACHMENTS_PREFIX = '/uploads/task-attachments';
-const COMMENT_ATTACHMENTS_PREFIX = '/uploads/task-comment-attachments';
+import { basename } from 'path';
+import type { UploadedFileMeta } from '../storage/cloudinary.service';
 
 const TASK_INCLUDE = {
 	attachments: true,
@@ -34,7 +31,7 @@ export class TasksService {
 			...task,
 			attachments: task.attachments.map((attachment) => ({
 				id: attachment.id,
-				url: `${ATTACHMENTS_PREFIX}/${attachment.storedFileName}`,
+				url: attachment.storedFileName,
 				originalFileName: attachment.originalFileName,
 				mimeType: attachment.mimeType,
 				sizeBytes: attachment.sizeBytes,
@@ -49,7 +46,7 @@ export class TasksService {
 				author: comment.author,
 				attachments: comment.attachments.map((attachment) => ({
 					id: attachment.id,
-					url: `${COMMENT_ATTACHMENTS_PREFIX}/${attachment.storedFileName}`,
+					url: attachment.storedFileName,
 					originalFileName: attachment.originalFileName,
 					mimeType: attachment.mimeType,
 					sizeBytes: attachment.sizeBytes,
@@ -58,12 +55,6 @@ export class TasksService {
 		};
 	}
 
-	static makeStoredFileName(originalname: string): string {
-		const base = basename(originalname).replace(/[^a-zA-Z0-9._-]/g, '_');
-		const ext = extname(base) || extname(originalname) || '';
-		return `${randomUUID()}${ext}`.slice(0, 220);
-	}
-	
 	async createTask(createTaskDto: CreateTaskDto) {
 		const task = await this.prisma.task.create({ 
 			data: {
@@ -138,12 +129,12 @@ export class TasksService {
 		});
 	}
 
-	async addAttachments(taskId: string, files: { filename: string; originalname: string; mimetype: string; size: number }[]) {
+	async addAttachments(taskId: string, files: UploadedFileMeta[]) {
 		await this.prisma.taskAttachment.createMany({
 			data: files.map((file) => ({
 				taskId,
-				storedFileName: file.filename,
-				originalFileName: basename(file.originalname) || file.filename,
+				storedFileName: file.url,
+				originalFileName: basename(file.originalname) || file.url,
 				mimeType: file.mimetype || 'application/octet-stream',
 				sizeBytes: file.size,
 			})),
@@ -180,7 +171,7 @@ export class TasksService {
 		taskId: string,
 		authorId: string,
 		dto: CreateTaskCommentDto,
-		files: { filename: string; originalname: string; mimetype: string; size: number }[],
+		files: UploadedFileMeta[],
 	) {
 		await this.prisma.taskComment.create({
 			data: {
@@ -189,8 +180,8 @@ export class TasksService {
 				body: dto.body,
 				attachments: {
 					create: files.map((file) => ({
-						storedFileName: file.filename,
-						originalFileName: basename(file.originalname) || file.filename,
+						storedFileName: file.url,
+						originalFileName: basename(file.originalname) || file.url,
 						mimeType: file.mimetype || 'application/octet-stream',
 						sizeBytes: file.size,
 					})),
