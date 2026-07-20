@@ -6,7 +6,7 @@
 					<div class="text-xl font-semibold">
 						Boards
 					</div>
-					<div class="pi pi-plus cursor-pointer text-zinc-400 transition-colors hover:text-white cursor-pointer pl-[13px] pr-4" @click="isCreateBoardDialogOpen = true" />
+					<div class="pi pi-plus text-zinc-400 transition-colors hover:text-white cursor-pointer pl-[13px] pr-4" @click="isCreateBoardDialogOpen = true" />
 				</div>
 				<ul v-if="boards && boards.length">
 					<li v-for="board in boards" :key="board.id">
@@ -27,10 +27,13 @@
 						Chats
 					</div>
 					<div class="relative" >
-						<div class="pi pi-plus cursor-pointer text-zinc-400 transition-colors hover:text-white cursor-pointer pl-[13px] pr-4" @click="togglePopover" />
+						<div 
+                            class="pi pi-plus text-zinc-400 transition-colors hover:text-white cursor-pointer pl-[13px] pr-4"
+                            @click="togglePopover" 
+                        />
 						<Popover ref="memberPopover">
 							<div>
-								<ul class="flex flex-col gap-2">
+								<ul v-if="otherMembers?.length" class="flex flex-col gap-2">
 									<li
 										v-for="user in otherMembers"
 										:key="user.id"
@@ -38,13 +41,16 @@
 										class="flex items-center gap-2 hover:bg-gray-500/50 rounded-md px-2 py-1 cursor-pointer transition-colors"
 									>
 										<div class="flex items-center gap-2">
-											<div class="w-[24px] h-[24px] bg-zinc-400/50 rounded-full" />
+											<div class="w-6 h-6 bg-zinc-400/50 rounded-full" />
 										</div>
 										<span>
 											{{ user.username }}
 										</span>
 									</li>
 								</ul>
+								<p v-else class="text-zinc-400 text-sm">
+									No members found
+								</p>
 							</div>
 						</Popover>
 					</div>
