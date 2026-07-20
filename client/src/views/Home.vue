@@ -16,7 +16,7 @@
 					icon="pi pi-arrow-right"
 					icon-pos="right"
 					size="large"
-					@click="router.push('/teams')"
+					@click="handleGoToTeams"
 				/>
 			</div>
 		</div>
@@ -42,10 +42,12 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/modules/Auth';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 
 const router = useRouter();
+const authStore = useAuthStore();
 
 const features = [
 	{
@@ -70,4 +72,12 @@ const features = [
 		description: 'Invite members, assign roles, and monitor each contributor\'s progress through built-in analytics.',
 	},
 ];
+
+const handleGoToTeams = () => {
+    if(authStore.isAuthenticated) {
+	    router.push('/teams');
+    } else {
+        authStore.openAuthModal();
+    }
+};
 </script>
