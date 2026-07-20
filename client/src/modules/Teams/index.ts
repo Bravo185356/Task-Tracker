@@ -28,6 +28,7 @@ export {
 
 export { TeamsAPI } from './api/teams';
 export { useTeamsStore } from './store';
+export { useTeamMembers } from './composables/useTeamMembers';
 
 export { default as TeamCard } from './components/TeamCard.vue';
 export { default as CreateTeamModal } from './components/CreateTeamModal.vue';

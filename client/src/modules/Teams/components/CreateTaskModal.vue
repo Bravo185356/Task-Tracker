@@ -33,9 +33,9 @@
 						id="taskAssignedTo" 
 						v-model="taskAssignedTo" 
 						placeholder="Select Assignee" 
-						:options="team?.members" 
+						:options="teamMembers" 
 						option-label="username" 
-						option-value="id" 
+						option-value="userId" 
 					/>
 				</div>
 			</div>
@@ -61,7 +61,7 @@ import type { CreateTaskRequest } from '../modules/Task/api/tasks.types';
 import type { TaskColumn } from '@/shared/types/entities';
 import { TasksAPI } from '../modules/Task/api/tasks';
 import { BoardsAPI } from '../modules/Boards/api/boards';
-import { TeamsAPI } from '../api/teams';
+import { useTeamMembers } from '../composables/useTeamMembers';
 import { ref } from 'vue';
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import { useToast } from 'primevue/usetoast';
@@ -90,10 +90,7 @@ const route = useRoute();
 
 const teamId = route.params.teamId as string;
 
-const { data: team } = useQuery({
-	queryKey: ['team', teamId],
-	queryFn: () => TeamsAPI.getTeamInfo(teamId),
-});
+const teamMembers = useTeamMembers(teamId);
 
 const { data: boards } = useQuery({
 	queryKey: ['boards', teamId],

@@ -90,10 +90,10 @@
 
 <script setup lang="ts">
 import type { Chat, Board } from '@/shared/types/entities';
+import { useTeamMembers } from '../composables/useTeamMembers';
 import { useRoute, useRouter } from 'vue-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { BoardsAPI, type CreateBoardRequest } from '../modules/Boards';
-import { TeamsAPI } from '../api/teams';
 import { computed, ref } from 'vue';
 import { useAuthStore } from '@/modules/Auth';
 import { useToast } from 'primevue/usetoast';
@@ -116,17 +116,14 @@ const boardName = ref('');
 
 const teamId = computed(() => route.params.teamId as string);
 const otherMembers = computed(() => {
-	return team.value?.members?.filter((member) => member.userId !== authStore.user?.id);
+    return teamMembers?.filter((member) => member.userId !== authStore.user?.id);
 });
+
+const teamMembers = useTeamMembers(teamId.value);
 
 const { data: boards } = useQuery({
 	queryKey: ['boards', teamId.value],
 	queryFn: () => BoardsAPI.getBoards(teamId.value),
-});
-
-const { data: team } = useQuery({
-	queryKey: ['team', teamId.value],
-	queryFn: () => TeamsAPI.getTeamInfo(teamId.value),
 });
 
 const { mutate: createBoard } = useMutation({

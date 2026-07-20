@@ -7,23 +7,13 @@
 				</h4>
 				<Divider class="my-3" />
 				<div class="flex items-center justify-between">
-					<div v-if="task.assigned" class="flex items-center gap-2">
-						<Avatar 
-							:label="task.assigned.username.charAt(0).toUpperCase()"
-							size="small"
-							shape="circle"
-							class="bg-gradient-to-br from-violet-500 to-purple-600 text-white font-bold"
+					<div class="flex items-center gap-2">
+						<Avatar
+							:url="assignedMember?.avatar ?? null"
+							:size="28"
 						/>
-						<span class="text-xs text-zinc-400 font-medium">{{ task.assigned.username }}</span>
-					</div>
-					<div v-else class="flex items-center gap-2">
-						<Avatar 
-							icon="pi pi-user"
-							size="small"
-							shape="circle"
-							class="bg-zinc-700/50 text-zinc-500"
-						/>
-						<span class="text-xs text-zinc-500">Unassigned</span>
+						<span v-if="task.assignedTo" class="text-xs text-zinc-400 font-medium">{{ assignedMember?.username }}</span>
+                        <span v-else class="text-xs text-zinc-500">Unassigned</span>
 					</div>
 					<div v-if="task.priority" class="flex items-center gap-2">
 						<Tag 
@@ -40,13 +30,19 @@
 </template>
 
 <script setup lang="ts">
-import type { Task } from '@/shared/types/entities';
+import type { Task, TeamMember } from '@/shared/types/entities';
+import { computed } from 'vue';
 import Card from 'primevue/card';
-import Avatar from 'primevue/avatar';
+import Avatar from '@/shared/components/Avatar.vue';
 import Divider from 'primevue/divider';
 import Tag from 'primevue/tag';
 
 const props = defineProps<{
-	task: Task;
+    task: Task;
+    teamMembers: TeamMember[];
 }>();
+
+const assignedMember = computed(() => {
+    return props.teamMembers.find((member) => member.userId === props.task.assignedTo);
+});
 </script>

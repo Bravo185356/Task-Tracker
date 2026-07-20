@@ -38,6 +38,7 @@
 					:key="column.id"
 					:column-params="column"
 					:board="board"
+					:team-members="teamMembers"
 				/>
 			</div>
 		</div>
@@ -52,7 +53,8 @@ import {
 	Column, 
 	columns, 
 	BoardsAPI,
-	useTeamsStore
+	useTeamsStore,
+	useTeamMembers
 } from '@/modules/Teams';
 import ProgressSpinner from 'primevue/progressspinner';
 import Button from 'primevue/button';
@@ -66,11 +68,13 @@ const boardId = route.params.boardId as string;
 useBoardWebSocket(boardId);
 
 const { data: board, isLoading, error } = useQuery({
-	queryKey: ['board', boardId],
+    queryKey: ['board', boardId],
 	queryFn: () => BoardsAPI.getBoard(boardId),
 	refetchOnMount: true,
 	staleTime: 0,
 });
+
+const teamMembers = useTeamMembers(route.params.teamId as string);
 
 const handleDeleteBoard = () => {
 	console.log('delete board');

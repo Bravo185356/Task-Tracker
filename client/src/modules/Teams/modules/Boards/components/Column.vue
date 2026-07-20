@@ -46,6 +46,7 @@
 					:id="task.id"
 					:key="task.id"
 					:task="task"
+					:team-members="teamMembers"
 					@click="handleTaskClick(task.id)"
 				/>
 			</VueDraggableNext>
@@ -67,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Board, Task, TaskColumn } from '@/shared/types/entities';
+import type { Board, Task, TaskColumn, TeamMember } from '@/shared/types/entities';
 import type { ColumnConfig } from '../constants/columns';
 import { ref, computed } from 'vue';
 import { VueDraggableNext } from 'vue-draggable-next';
@@ -82,6 +83,7 @@ import Button from 'primevue/button';
 const props = defineProps<{
 	columnParams: ColumnConfig;
 	board: Board;
+	teamMembers: TeamMember[];
 }>();
 
 const toast = useToast();

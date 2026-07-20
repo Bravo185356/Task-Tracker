@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
 import type { Chat, Team } from '@/shared/types/entities';
+import { useTeamMembers } from '../../../composables/useTeamMembers';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useQuery, useQueryClient } from '@tanstack/vue-query';
@@ -73,6 +74,7 @@ const confirm = useConfirm();
 const queryClient = useQueryClient();
 const authStore = useAuthStore();
 const route = useRoute();
+const teamMembers = useTeamMembers(props.teamId);
 
 const userId = computed(() => route.params.userId as string);
 const isChatCreated = computed(() => chats.value?.some((chat) => chat.type === 'DIRECT' && chat.participants.some((participant) => participant.userId === userId.value)));
@@ -83,8 +85,7 @@ const { data: chats } = useQuery({
 
 const getAvatarUrl = (chat?: Chat) => {
 	if(!chat) {
-		const team = queryClient.getQueryData<Team>(['team', props.teamId])!;
-		return team.members.find((member) => member.userId === userId.value)!.avatar;
+		return teamMembers.find((member) => member.userId === userId.value)!.avatar;
 	}
 	
 	const otherUser = chat.participants.find((p) => p.userId !== authStore.user?.id)!;

@@ -8,7 +8,7 @@
 					<div class="flex items-center gap-3">
 						<Select 
 							:model-value="task.assignedTo"
-							:options="team?.members"
+							:options="teamMembers"
 							placeholder="Select assignee"
 							option-label="username"
 							option-value="userId"
@@ -20,7 +20,7 @@
 								<div v-if="slotProps.value" class="flex items-center gap-1">
 									<Avatar 
 										class="shrink-0"
-										:url="getUserAvatar(slotProps.value)"
+										:url="getUserAvatar(slotProps.value) ?? null"
 										:size="25"
 									/>
 									<div>{{ getUsername(slotProps.value) }}</div>
@@ -90,8 +90,7 @@
 import type { Task } from '@/shared/types/entities';
 import { taskStatuses } from '../constants/taskStatuses';
 import { taskPriorities } from '../constants/taskPriorities';
-import { useQuery } from '@tanstack/vue-query';
-import { TeamsAPI } from '@/modules/Teams';
+import { useTeamMembers } from '@/modules/Teams';
 import { ref, onMounted } from 'vue';
 import Card from 'primevue/card';
 import Select from 'primevue/select';
@@ -110,10 +109,7 @@ const emit = defineEmits<{
 const teamId = props.task.teamId;
 const taskDateRange = ref<(Date | null)[] | null>(null);
 
-const { data: team } = useQuery({
-	queryKey: ['team', teamId],
-	queryFn: () => TeamsAPI.getTeamInfo(teamId),
-});
+const teamMembers = useTeamMembers(teamId);
 
 const updateTask = (field: keyof Task, value: Task[keyof Task]) => {
 	emit('patchTask', { [field]: value });
@@ -142,11 +138,11 @@ function toDateOnlyString(d: Date): string {
 }
 	
 const getUsername = (id: string) => {
-	return team.value!.members.find(member => member.userId === id)!.username;
+	return teamMembers?.find(member => member.userId === id)?.username;
 };
 
 const getUserAvatar = (id: string) => {
-	return team.value!.members.find(member => member.userId === id)!.avatar;
+	return teamMembers?.find(member => member.userId === id)?.avatar;
 };
 
 onMounted(() => {
