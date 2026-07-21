@@ -41,7 +41,7 @@
 				drag-class="cursor-grabbing"
 				@end="changeTaskColumn"
 			>
-				<TaskCard
+				<BoardTaskCard
 					v-for="task in columnTasks"
 					:id="task.id"
 					:key="task.id"
@@ -72,11 +72,12 @@ import type { Board, Task, TaskColumn, TeamMember } from '@/shared/types/entitie
 import type { ColumnConfig } from '../constants/columns';
 import { ref, computed } from 'vue';
 import { VueDraggableNext } from 'vue-draggable-next';
-import { TasksAPI, CreateTaskModal } from '@/modules/Teams';
+import { TasksAPI } from '../../Task/api/tasks.ts';
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import { useToast } from 'primevue/usetoast';
 import { useRouter, useRoute } from 'vue-router';
-import TaskCard from './TaskCard.vue';
+import CreateTaskModal from '../../../components/CreateTaskModal.vue';
+import BoardTaskCard from './BoardTaskCard.vue';
 import Badge from 'primevue/badge';
 import Button from 'primevue/button';
 
@@ -101,19 +102,35 @@ const columnTasks = computed(() => {
 });
 
 const { mutate: updateBoard } = useMutation({
-	mutationFn: (task: Task) => TasksAPI.patchTask(task.id, task),
-	onSuccess: (updatedTask) => {
-		queryClient.setQueryData(['board', props.board.id], (board: Board) => {
-			return { ...board, tasks: board.tasks.map(t => t.id === updatedTask.id ? updatedTask : t) };
-		});
-	},
-	onError: () => {
+	mutationFn: (task: Task) => TasksAPI.patchTask(task.id, { status: task.status }),
+	onError: (_error, _updatedTask, context) => {
 		toast.add({
 			severity: 'error',
 			summary: 'Error',
 			detail: 'Failed to update task',
 		});
+        
+        if (context?.previousBoard) {
+            queryClient.setQueryData(['board', props.board.id], context.previousBoard);
+        }
+        
 	},
+    onMutate: async (updatedTask: Task) => {
+        await queryClient.cancelQueries({ queryKey: ['board', props.board.id] });
+        const previousBoard = queryClient.getQueryData<Board>(['board', props.board.id]);
+        
+        if (previousBoard) {
+            queryClient.setQueryData(['board', props.board.id], (board: Board) => {
+                return { 
+                    ...board, 
+                    tasks: board.tasks.map(task => 
+                        task.id === updatedTask.id ? { ...task, status: updatedTask.status } : task) 
+                };
+            });
+        }
+        
+        return { previousBoard };
+    },
 });
 
 const addTask = (column: TaskColumn) => {
@@ -122,10 +139,15 @@ const addTask = (column: TaskColumn) => {
 };
 
 const changeTaskColumn = (event: { to: HTMLElement; item: HTMLElement }) => {
-	const newColumn = event.to.getAttribute('column-id');
+	const newColumn = event.to.getAttribute('column-id') as TaskColumn;
 	const taskId = event.item.getAttribute('id');
 	const task = props.board?.tasks.find(task => task.id === taskId);
-	if (task && newColumn) {
+    
+    if (task?.status === newColumn) {
+        return;
+    }
+    
+	if (task && newColumn) {     
 		const updatedTask: Task = { ...task, status: newColumn };
 		updateBoard(updatedTask);
 	}

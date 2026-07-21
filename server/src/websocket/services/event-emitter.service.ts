@@ -30,9 +30,14 @@ export class EventEmitterService {
 			room.emit('taskDetails:updated', task);
 		}
 		
-		if (task.boardId) {
-			this.server.to(`board:${task.boardId}`).emit('board:task:updated', task);
-		}
+        if (task.boardId) {
+            const boardRoom = this.server.to(`board:${task.boardId}`);
+            if (excludeUserId) {
+              boardRoom.except(`user:${excludeUserId}`).emit('board:task:updated', task);
+            } else {
+              boardRoom.emit('board:task:updated', task);
+            }
+        }
 		
 		this.logger.log(`Task ${task.id} updated`);
 	}

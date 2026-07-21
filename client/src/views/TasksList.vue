@@ -44,13 +44,13 @@ import {
 	TasksAPI, 
 	TeamsAPI, 
 	BoardsAPI, 
-	TaskFilters, 
+	TaskFilters,
+    TaskCard,
 	type TaskFiltersModel 
 } from '@/modules/Teams';
 import { useRoute, useRouter } from 'vue-router';
 import { useDebouncedField } from '@/shared/composables/useDebouncedField';
 import ProgressSpinner from 'primevue/progressspinner';
-import TaskCard from '@/modules/Teams/modules/Task/components/TaskCard.vue';
 
 const route = useRoute();
 const teamId = route.params.teamId as string;
