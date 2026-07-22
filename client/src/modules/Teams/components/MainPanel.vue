@@ -1,60 +1,11 @@
 <template>
 	<Card class="w-86 min-h-[calc(100vh-140px)] overflow-y-auto shrink-0" :pt="{ body: { class: '!px-0' } }">
 		<template #content>
-			<div>
-				<div class="flex justify-between items-center mb-2 pl-4">
-					<div class="text-xl font-semibold">
-						Boards
-					</div>
-					<div class="pi pi-plus text-zinc-400 transition-colors hover:text-white cursor-pointer pl-[13px] pr-4" @click="isCreateBoardDialogOpen = true" />
-				</div>
-				<ul v-if="boards && boards.length">
-					<li v-for="board in boards" :key="board.id">
-						<RouterLink :to="`/teams/${teamId}/boards/${board.id}`" class="cursor-pointer transition-colors block hover:bg-gray-500/50 px-4 py-2">
-							{{ board.name }}
-						</RouterLink>
-					</li>
-				</ul>
-				<div v-else>
-					<p class="text-zinc-400 text-sm px-4">
-						No Boards Found
-					</p>
-				</div>
-			</div>
-			<div class="mt-4">
-				<div class="flex justify-between items-center mb-2 pl-4">
-					<div class="text-xl font-semibold">
-						Chats
-					</div>
-					<div class="relative" >
-						<div 
-                            class="pi pi-plus text-zinc-400 transition-colors hover:text-white cursor-pointer pl-[13px] pr-4"
-                            @click="togglePopover" 
-                        />
-						<Popover ref="memberPopover">
-							<div>
-								<ul v-if="otherMembers?.length" class="flex flex-col gap-2">
-									<li
-										v-for="user in otherMembers"
-										:key="user.id"
-										@click="handleCreateChat(user.userId)"
-										class="flex items-center gap-2 hover:bg-gray-500/50 rounded-md px-2 py-1 cursor-pointer transition-colors"
-									>
-										<div class="flex items-center gap-2">
-											<div class="w-6 h-6 bg-zinc-400/50 rounded-full" />
-										</div>
-										<span>
-											{{ user.username }}
-										</span>
-									</li>
-								</ul>
-								<p v-else class="text-zinc-400 text-sm">
-									No members found
-								</p>
-							</div>
-						</Popover>
-					</div>
-				</div>
+			<BoardsList
+                :team-id="teamId" 
+                @create-board="isCreateBoardDialogOpen = true"
+            />
+			<div class="mt-4 border-t pt-4">
 				<ChatList
 					:team-id="teamId"
 					@select="(chat) => handleChatSelect(chat)"
@@ -90,41 +41,27 @@
 
 <script setup lang="ts">
 import type { Chat, Board } from '@/shared/types/entities';
-import { useTeamMembers } from '../composables/useTeamMembers';
 import { useRoute, useRouter } from 'vue-router';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import { BoardsAPI, type CreateBoardRequest } from '../modules/Boards';
 import { computed, ref } from 'vue';
-import { useAuthStore } from '@/modules/Auth';
 import { useToast } from 'primevue/usetoast';
-import Card from 'primevue/card';
-import Popover from 'primevue/popover';
 import { ChatList } from '../modules/Chats';
+import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
+import BoardsList from '../modules/Boards/components/BoardsList.vue';
 
-const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
 const queryClient = useQueryClient();
 
 const isCreateBoardDialogOpen = ref(false);
-const memberPopover = ref();
 const boardName = ref('');
 
 const teamId = computed(() => route.params.teamId as string);
-const otherMembers = computed(() => {
-    return teamMembers?.filter((member) => member.userId !== authStore.user?.id);
-});
-
-const teamMembers = useTeamMembers(teamId.value);
-
-const { data: boards } = useQuery({
-	queryKey: ['boards', teamId.value],
-	queryFn: () => BoardsAPI.getBoards(teamId.value),
-});
 
 const { mutate: createBoard } = useMutation({
 	mutationFn: (data: CreateBoardRequest) => BoardsAPI.createBoard({ ...data, teamId: teamId.value }),
@@ -146,15 +83,6 @@ const { mutate: createBoard } = useMutation({
 		});
 	},
 });
-
-const handleCreateChat = (userId: string) => {
-	router.push(`/teams/${teamId.value}/chats/new/${userId}`);
-	memberPopover.value.hide();
-};
-
-const togglePopover = (event: MouseEvent) => {
-	memberPopover.value.toggle(event);
-};
 
 const handleChatSelect = (chat: Chat) => {
 	router.push(`/teams/${teamId.value}/chats/${chat.id}`);
