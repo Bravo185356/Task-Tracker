@@ -1,6 +1,6 @@
 <template>
 	<section class="flex min-h-0 min-w-0 flex-1 flex-col">
-		<div class="flex items-center gap-2 h-[59px] p-4 shrink-0 border-b-1 border-b-white max-md:border-t-1 border-t-white">
+		<div class="flex items-center gap-2 h-[59px] p-4 shrink-0 border-b border-b-zinc-700 max-md:border-t border-t-zinc-700">
 			<span class="truncate font-medium">
 				{{ chatName }}
 			</span>
@@ -96,7 +96,8 @@
 		<div v-else class="flex justify-center items-center flex-1 min-h-96">
 			<ProgressSpinner class="!w-12 !h-12" />
 		</div>
-		<div class="border-t border-zinc-700/50">
+        <Divider class="mb-0!"/>
+		<div>
 			<!-- Превью прикреплённых файлов -->
 			<div
 				v-if="selectedFiles.length > 0"
@@ -174,6 +175,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
 import Avatar from '@/shared/components/Avatar.vue';
+import Divider from 'primevue/divider';
 
 const props = defineProps<{
 	messages: Message[];

@@ -27,7 +27,7 @@
 			<div class="lg:col-span-2 space-y-6">
 				<Card>
 					<template #content>
-						<div class="space-y-6">
+						<div>
 							<div>
 								<InputText
 									:model-value="title"
@@ -48,7 +48,7 @@
 									</div>
 								</div>
 							</div>
-							<Divider class="!border-zinc-700/50" />
+							<Divider />
 							<div>
 								<div class="flex items-center justify-between mb-3">
 									<h3 class="text-lg font-semibold text-zinc-200">Description</h3>
@@ -65,7 +65,7 @@
 									/>
 								</div>
 							</div>
-							<Divider class="!border-zinc-700/50" />
+							<Divider />
 							<TaskAttachments :task="task" />
 						</div>
 					</template>

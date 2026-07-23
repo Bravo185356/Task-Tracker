@@ -56,7 +56,7 @@
 						fluid
 					/>
 				</div>
-				<Divider class="!border-zinc-700/50" />
+				<Divider />
 				<div>
 					<label class="text-sm font-medium text-zinc-400 block mb-2">Due Date</label>
 					<div class="flex items-center gap-2">

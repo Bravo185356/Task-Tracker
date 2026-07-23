@@ -5,7 +5,8 @@
                 :team-id="teamId" 
                 @create-board="isCreateBoardDialogOpen = true"
             />
-			<div class="mt-4 border-t pt-4">
+            <Divider />
+			<div>
 				<ChatList
 					:team-id="teamId"
 					@select="(chat) => handleChatSelect(chat)"
@@ -52,6 +53,7 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import BoardsList from '../modules/Boards/components/BoardsList.vue';
+import Divider from 'primevue/divider';
 
 const route = useRoute();
 const router = useRouter();

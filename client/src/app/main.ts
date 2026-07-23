@@ -27,17 +27,17 @@ const queryClient = new QueryClient({
 const ZincPreset = definePreset(Aura, {
 	semantic: {
 		primary: {
-			50: '#fafafa',   // zinc-50 - почти белый
-			100: '#f4f4f5',  // zinc-100
-			200: '#e4e4e7',  // zinc-200
-			300: '#d4d4d8',  // zinc-300
-			400: '#a1a1aa',  // zinc-400 - тёмно-серый (без синего!)
-			500: '#71717a',  // zinc-500 - очень тёмный
-			600: '#52525b',  // zinc-600 - почти чёрный
-			700: '#3f3f46',  // zinc-700 - чёрный с серым
-			800: '#27272a',  // zinc-800 - глубокий чёрный
-			900: '#18181b',  // zinc-900 - почти чистый чёрный
-			950: '#09090b'   // zinc-950 - чёрный
+			50: '#fafafa',
+			100: '#f4f4f5',
+			200: '#e4e4e7',
+			300: '#d4d4d8',
+			400: '#a1a1aa',
+			500: '#71717a',
+			600: '#52525b',
+			700: '#3f3f46',
+			800: '#27272a',
+			900: '#18181b',
+			950: '#09090b'
 		}
 	},
 	components: {
@@ -69,7 +69,7 @@ const ZincPreset = definePreset(Aura, {
 			colorScheme: {
 				dark: {
 					root: {
-						borderColor: '{primary.300}',
+						borderColor: '{primary.700}',
 					}
 				}
 			}

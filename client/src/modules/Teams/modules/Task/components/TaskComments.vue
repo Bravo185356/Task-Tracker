@@ -1,7 +1,7 @@
 <template>
 	<Card>
 		<template #content>
-			<div class="space-y-4">
+			<div>
 				<div class="flex items-center justify-between">
 					<h3 class="text-lg font-semibold text-zinc-200 flex items-center gap-2">
 						<i class="pi pi-comments text-zinc-400" />
@@ -9,7 +9,7 @@
 						<span v-if="task.comments?.length" class="text-sm font-normal text-zinc-400">({{ task.comments.length }})</span>
 					</h3>
 				</div>
-				<Divider class="!border-zinc-700/50" />
+				<Divider />
 				<ul v-if="task.comments?.length" class="space-y-4 list-none p-0 m-0">
 					<li
 						v-for="comment in task.comments"
@@ -54,8 +54,8 @@
 						</div>
 					</li>
 				</ul>
-				<p v-else class="text-sm text-zinc-500 text-center py-2">No comments yet</p>
-				<Divider class="!border-zinc-700/50" />
+				<p v-else class="text-sm text-zinc-500 text-center">No comments yet</p>
+				<Divider />
 				<div class="flex gap-3">
 					<Avatar :url="authStore.user!.avatar" />
 					<form class="flex-1" @submit.prevent="handleSubmitComment">
@@ -65,7 +65,7 @@
 							rows="3"
 							auto-resize
 							fluid
-							class="w-full !bg-zinc-900/50 !border-zinc-700/50 !text-zinc-200 placeholder:text-zinc-500"
+							class="w-full !bg-zinc-900/50 !border-zinc-700 !text-zinc-200 placeholder:text-zinc-500"
 						/>
 						<div class="flex gap-4 justify-between mt-3" :class="{ 'justify-end': !selectedFiles.length }">
 							<ul v-if="selectedFiles.length" class="flex flex-wrap gap-2 list-none p-0 m-0">

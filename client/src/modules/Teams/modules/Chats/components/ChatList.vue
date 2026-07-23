@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col h-full min-h-0 overflow-y-auto">
-        <div class="flex justify-between items-center mb-2 pl-4">
+        <div v-if="!isChatPage" class="flex justify-between items-center mb-2 pl-4">
             <div class="text-xl font-semibold">
                 Chats
             </div>
@@ -25,7 +25,7 @@
                 </Popover>
             </div>
         </div>
-        <nav>
+        <nav :class="{ 'py-4': isChatPage }">
             <ul v-if="chats?.length" class="flex flex-col gap-2">
                 <li v-for="chat in chats" :key="chat.id" class="cursor-pointer block hover:bg-gray-500/50 px-4 py-2 transition-colors flex justify-between gap-2" :class="{ 'bg-zinc-500/50': chat.id === activeChatId }" @click="onChatSelect(chat)">
                     <div class="flex gap-2 min-w-0">
@@ -97,6 +97,7 @@ const route = useRoute();
 const router = useRouter();
 const teamMembers = useTeamMembers(props.teamId);
 
+const isChatPage = computed(() => route.name === 'ChatPage' || route.name === 'NewChatPage');
 const otherMembers = computed(() => teamMembers?.filter((member) => member.userId !== authStore.user?.id));
 const userId = computed(() => route.params.userId as string);
 const isChatCreated = computed(() => 
