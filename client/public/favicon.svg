@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Minimal kanban favicon: dark background, subtle white borders, blue accent card -->
+  <rect width="64" height="64" rx="14" fill="#0b0f1a"/>
+
+  <!-- Board -->
+  <rect x="12" y="14" width="40" height="36" rx="10" fill="#0f1628" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+
+  <!-- Columns -->
+  <g stroke="rgba(255,255,255,0.14)" stroke-width="2">
+    <rect x="16" y="18" width="10" height="28" rx="5" fill="rgba(255,255,255,0.02)"/>
+    <rect x="27" y="18" width="10" height="28" rx="5" fill="rgba(255,255,255,0.02)"/>
+    <rect x="38" y="18" width="10" height="28" rx="5" fill="rgba(255,255,255,0.02)"/>
+  </g>
+
+  <!-- Cards -->
+  <g>
+    <rect x="18" y="22" width="6" height="4" rx="2" fill="rgba(255,255,255,0.18)"/>
+    <rect x="18" y="28" width="6" height="4" rx="2" fill="rgba(255,255,255,0.12)"/>
+
+    <rect x="29" y="22" width="6" height="4" rx="2" fill="#3b82f6"/>
+    <rect x="29" y="28" width="6" height="4" rx="2" fill="rgba(255,255,255,0.12)"/>
+
+    <rect x="40" y="22" width="6" height="4" rx="2" fill="rgba(255,255,255,0.18)"/>
+    <rect x="40" y="28" width="6" height="4" rx="2" fill="rgba(255,255,255,0.12)"/>
+  </g>
+</svg>
