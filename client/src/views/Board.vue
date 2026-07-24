@@ -46,18 +46,19 @@ import {
 	BoardsAPI,
 	useTeamMembers
 } from '@/modules/Teams';
+import { computed } from 'vue';
 import ProgressSpinner from 'primevue/progressspinner';
 
 const router = useRouter();
 const route = useRoute();
 
-const boardId = route.params.boardId as string;
+const boardId = computed(() => route.params.boardId as string);
 
-useBoardWebSocket(boardId);
+useBoardWebSocket(boardId.value);
 
 const { data: board, isLoading, error } = useQuery({
     queryKey: ['board', boardId],
-	queryFn: () => BoardsAPI.getBoard(boardId),
+	queryFn: () => BoardsAPI.getBoard(boardId.value),
 	refetchOnMount: true,
 	staleTime: 0,
 });
