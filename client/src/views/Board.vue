@@ -22,15 +22,6 @@
 						</h1>
 					</div>
 				</div>
-				<div v-if="teamsStore.isAdminOrOwner" class="flex items-center gap-2">
-					<Button
-						icon="pi pi-trash"
-						outlined
-						severity="danger"
-						label="Delete"
-						@click="handleDeleteBoard"
-					/>
-				</div>
 			</div>
 			<div class="flex gap-4 overflow-x-auto flex-1 pb-6">
 				<Column
@@ -53,15 +44,12 @@ import {
 	Column, 
 	columns, 
 	BoardsAPI,
-	useTeamsStore,
 	useTeamMembers
 } from '@/modules/Teams';
 import ProgressSpinner from 'primevue/progressspinner';
-import Button from 'primevue/button';
 
 const router = useRouter();
 const route = useRoute();
-const teamsStore = useTeamsStore();
 
 const boardId = route.params.boardId as string;
 
@@ -75,8 +63,4 @@ const { data: board, isLoading, error } = useQuery({
 });
 
 const teamMembers = useTeamMembers(route.params.teamId as string);
-
-const handleDeleteBoard = () => {
-	console.log('delete board');
-};
 </script>
