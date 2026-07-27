@@ -6,6 +6,7 @@
         </main>
         <Auth v-if="authStore.showAuthModal" v-model:visible="authStore.showAuthModal" />
         <Toast />
+        <ConfirmDialog />
     </div>
 </template>
 
@@ -18,6 +19,7 @@ import { useAuthStore } from './modules/Auth/store';
 import { useRouter } from 'vue-router';
 import Toast from 'primevue/toast';
 import Header from '@/app/layout/Header.vue';
+import ConfirmDialog from 'primevue/confirmdialog';
 
 const authStore = useAuthStore();
 const router = useRouter();

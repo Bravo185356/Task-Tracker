@@ -146,7 +146,6 @@ const confirmChangeChat = (chat: Chat) => {
     confirm.require({
         message: 'Are you sure you want to change the chat? This chat is will be deleted.',
         header: 'Confirm your action',
-        icon: 'pi pi-exclamation-triangle',
         rejectProps: {
             label: 'No',
             severity: 'secondary',

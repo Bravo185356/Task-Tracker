@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Request, UseGuards, Get, Param, Patch } from '@nestjs/common';
+import { Controller, Post, Body, Request, UseGuards, Get, Param, Patch, Delete } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -22,4 +22,9 @@ export class BoardsController {
 	async createBoard(@Body() createBoardDto: CreateBoardDto) {
 		return this.boardsService.createBoard(createBoardDto);
 	}
+    
+    @Delete(':boardId')
+    async deleteBoard(@Param('boardId') boardId: string) {
+        return this.boardsService.deleteBoard(boardId);
+    }
 }

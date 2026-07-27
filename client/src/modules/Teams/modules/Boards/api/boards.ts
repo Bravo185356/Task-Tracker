@@ -18,4 +18,8 @@ export class BoardsAPI {
 	static async updateBoard(boardId: string, data: Partial<Board>): Promise<Board> {
 		return httpClient.patch<Board>(`/boards/${boardId}`, data);
 	}
+    
+    static async deleteBoard(boardId: string): Promise<void> {
+		return httpClient.delete<void>(`/boards/${boardId}`);
+	}
 }

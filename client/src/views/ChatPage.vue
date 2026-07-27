@@ -49,7 +49,6 @@
 			</div>
 		</template>
 	</Card>
-	<ConfirmDialog />
 </template>
 
 <script setup lang="ts">
@@ -57,14 +56,20 @@ import type { Chat } from '@/shared/types/entities';
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
-import { ChatsAPI, useChatWs, type CreateChatRequest, ChatList, ChatConversation } from '@/modules/Teams';
+import { 
+    type CreateChatRequest,
+    ChatsAPI, 
+    useChatWs, 
+    ChatList, 
+    ChatConversation, 
+    useCreateMessage, 
+    useMarkRead 
+} from '@/modules/Teams';
 import { useAuthStore } from '@/modules/Auth';
 import { useToast } from 'primevue/usetoast';
-import { useCreateMessage, useMarkRead } from '@/modules/Teams';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import MessageItem from 'primevue/message';
-import ConfirmDialog from 'primevue/confirmdialog';
 
 const route = useRoute();
 const router = useRouter();
@@ -75,6 +80,7 @@ const toast = useToast();
 const chatId = computed(() => route.params.chatId as string);
 const userId = computed(() => route.params.userId as string);
 const isChatExist = computed(() => !userId.value);
+
 const firstMessage = ref('');
 
 const teamId = route.params.teamId as string;

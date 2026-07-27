@@ -30,4 +30,10 @@ export class BoardsService {
 			},
 		});
 	}
+
+	async deleteBoard(boardId: string) {
+		return this.prisma.board.delete({
+			where: { id: boardId },
+		});
+	}
 }
