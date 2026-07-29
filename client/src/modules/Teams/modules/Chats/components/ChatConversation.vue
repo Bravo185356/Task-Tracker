@@ -156,6 +156,7 @@
                         }
                     }"
 					placeholder="Message…"
+                    rows="1"
 					@keydown.enter.exact.prevent="handleSendMessage"
 				/>
 				<Button
