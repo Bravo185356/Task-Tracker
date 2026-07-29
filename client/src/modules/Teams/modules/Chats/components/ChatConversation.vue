@@ -146,9 +146,15 @@
 					type="button"
 					@click="fileInputRef?.click()"
 				/>
-				<InputText
+				<Textarea
 					v-model="messageText"
+                    autoResize 
 					class="flex-1"
+                    :pt="{
+                        root: {
+                            class: 'max-h-25 max-md:max-h-15 overflow-y-auto! min-h-11!'
+                        }
+                    }"
 					placeholder="Message…"
 					@keydown.enter.exact.prevent="handleSendMessage"
 				/>
@@ -172,10 +178,10 @@ import { useRoute } from 'vue-router';
 import { useQueryClient } from '@tanstack/vue-query';
 import { getDateString } from '@/shared/utilities/getDateString';
 import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
 import Avatar from '@/shared/components/Avatar.vue';
 import Divider from 'primevue/divider';
+import Textarea from 'primevue/textarea';
 
 const props = defineProps<{
 	messages: Message[];
