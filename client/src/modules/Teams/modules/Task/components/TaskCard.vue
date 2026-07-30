@@ -16,8 +16,8 @@
 				</header>
 				<div class="flex flex-wrap items-center gap-2">
 					<Tag
-						:value="getTaskStatusLabel(task.status)"
-						:class="getTagClasses(task.status)"
+						:value="getStatusLabel(task.status)"
+						:class="getStatusTagClass(task.status)"
 						:pt="{ root: { class: 'h-[30px]' } }"
 					/>
 					<Tag
@@ -46,9 +46,8 @@
 
 <script setup lang="ts">
 import type { Task, Team } from '@/shared/types/entities';
-import { taskStatuses } from '../constants/taskStatuses';
-import { getPriorityTagClass } from '../utilities/getPriorityClasses';
-import { taskPriorities } from '../constants/taskPriorities';
+import { getPriorityTagClass, getPriorityLabel } from '../utilities/taskPriority';
+import { getStatusTagClass, getStatusLabel } from '../utilities/taskStatus';
 import { useQueryClient } from '@tanstack/vue-query';
 import { computed } from 'vue';
 import Card from 'primevue/card';
@@ -63,10 +62,6 @@ const queryClient = useQueryClient();
 
 const teamId = props.task.teamId;
 const team = queryClient.getQueryData<Team>(['team', teamId]);
-
-const getTagClasses = (taskStatus: string) => taskStatuses.find((status) => status.value === taskStatus)!.tagClass;
-const getTaskStatusLabel = (taskStatus: string) => taskStatuses.find((status) => status.value === taskStatus)!.label;
-const getPriorityLabel = (taskPriority: string) => taskPriorities.find((priority) => priority.value === taskPriority)!.label;
 
 const assignedUser = computed(() => {
 	if (!props.task.assignedTo) {

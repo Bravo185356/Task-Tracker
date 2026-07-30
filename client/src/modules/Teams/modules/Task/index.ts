@@ -1,7 +1,3 @@
-export { taskStatuses } from './constants/taskStatuses';
-export { taskPriorities } from './constants/taskPriorities';
-export { getPriorityTagClass } from './utilities/getPriorityClasses';
-
 export { useTaskDetailsWs } from './composables/useTaskDetailsWs';
 
 export { TasksAPI } from './api/tasks';

@@ -3,27 +3,41 @@
 		<ProgressSpinner />
 	</div>
 	<div v-else-if="task" class="flex-1">
-		<div class="mb-6">
-			<div class="flex items-center gap-3 mb-4">
-				<router-link :to="`/teams/${teamId}`">
-					<Button
-						icon="pi pi-arrow-left"
-						text
-						rounded
-						severity="secondary"
-						class="text-zinc-300 hover:text-white"
-					/>
-				</router-link>
+		<div>
+			<div class="flex items-center justify-between gap-3 mb-4">
 				<div class="flex items-center gap-3">
-					<Tag 
-						:value="currentStatus!.label"
-						:class="currentStatus!.tagClass"
+					<router-link :to="`/teams/${teamId}`">
+						<Button
+							icon="pi pi-arrow-left"
+							text
+							rounded
+							severity="secondary"
+							class="text-zinc-300 hover:text-white"
+						/>
+					</router-link>
+				</div>
+
+				<div class="flex items-center gap-2">
+					<Button
+						label="Copy Link"
+						icon="pi pi-link"
+						outlined
+						size="small"
+						@click="handleCopyLink"
+					/>
+					<Button
+						label="Delete Task"
+						icon="pi pi-trash"
+						outlined
+						severity="danger"
+						size="small"
+						@click="handleDeleteTask"
 					/>
 				</div>
 			</div>
 		</div>
 
-		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 			<div class="lg:col-span-2 space-y-6">
 				<Card>
 					<template #content>
@@ -72,30 +86,7 @@
 				</Card>
 				<TaskComments :task="task" />
 			</div>
-			<div class="space-y-6">
-				<TaskDetails :task="task" @patchTask="patchTask" />
-				<Card>
-					<template #content>
-						<div class="space-y-3">
-							<h3 class="text-lg font-semibold text-zinc-200 mb-4">Actions</h3>				
-							<Button
-								label="Copy Link"
-								icon="pi pi-link"
-								outlined
-								fluid
-							/>
-							<Button
-								label="Delete Task"
-								icon="pi pi-trash"
-								outlined
-								severity="danger"
-								fluid
-								@click="handleDeleteTask"
-							/>
-						</div>
-					</template>
-				</Card>
-			</div>
+            <TaskDetails :task="task" @patchTask="patchTask" />
 		</div>
 	</div>
 	<div v-else>
@@ -109,16 +100,16 @@
 
 <script setup lang="ts">
 import type { Task } from '@/shared/types/entities';
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
-import { TaskDetails, taskStatuses, useTaskDetailsWs, TasksAPI, TaskComments, TaskAttachments } from '@/modules/Teams';
+import { TaskDetails, useTaskDetailsWs, TasksAPI, TaskComments, TaskAttachments } from '@/modules/Teams';
 import { useDebouncedField } from '@/shared/composables/useDebouncedField';
 import { useToast } from 'primevue/usetoast';
 import { getDateString } from '@/shared/utilities/getDateString';
+import { useCopyToClipboard } from '@/shared/composables/useCopyToClipboard';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
-import Tag from 'primevue/tag';
 import Divider from 'primevue/divider';
 import ProgressSpinner from 'primevue/progressspinner';
 import InputText from 'primevue/inputtext';
@@ -128,6 +119,7 @@ const route = useRoute();
 const toast = useToast();
 const router = useRouter();
 const queryClient = useQueryClient();
+const { copy } = useCopyToClipboard();
 
 const teamId = route.params.teamId as string;
 const taskId = route.params.taskId as string;
@@ -175,9 +167,7 @@ watch(task, (newTask: Task | undefined) => {
 	}
 }, { immediate: true });
 
-const currentStatus = computed(() =>
-	taskStatuses.find(s => s.value === task.value?.status)
-);
+const handleCopyLink = async () => await copy(window.location.href);
 
 const handleDeleteTask = () => {
 	TasksAPI.deleteTask(taskId).then(() => {

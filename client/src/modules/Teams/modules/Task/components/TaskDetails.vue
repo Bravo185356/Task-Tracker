@@ -42,7 +42,19 @@
 						option-value="value"
 						@update:model-value="updateTask('status', $event)"
 						fluid
-					/>
+					>
+                        <template #value="slotProps">
+                            <span v-if="slotProps.value" :class="getStatusTagClass(slotProps.value, true) ?? ''">
+                                {{ getStatusLabel(slotProps.value) }}
+                            </span>
+                            <span v-else>{{ slotProps.placeholder }}</span>
+                        </template>
+                        <template #option="slotProps">
+                            <span :class="getStatusTagClass(slotProps.option.value, true) ?? ''">
+                                {{ getStatusLabel(slotProps.option.value) }}
+                            </span>
+                        </template>
+                    </Select>
 				</div>
 				<div>
 					<label class="text-sm font-medium text-zinc-400 block mb-2">Priority</label>
@@ -54,9 +66,20 @@
 						option-value="value"
 						@update:model-value="updateTask('priority', $event)"
 						fluid
-					/>
+					>
+                        <template #value="slotProps">
+                            <span v-if="slotProps.value" :class="getPriorityTagClass(slotProps.value, true) ?? ''">
+                                {{ getPriorityLabel(slotProps.value) }}
+                            </span>
+                            <span v-else>{{ slotProps.placeholder }}</span>
+                        </template>
+                        <template #option="slotProps">
+                            <span :class="getPriorityTagClass(slotProps.option.value, true) ?? ''">
+                                {{ getPriorityLabel(slotProps.option.value) }}
+                            </span>
+                        </template>
+                    </Select>
 				</div>
-				<Divider />
 				<div>
 					<label class="text-sm font-medium text-zinc-400 block mb-2">Due Date</label>
 					<div class="flex items-center gap-2">
@@ -92,9 +115,10 @@ import { taskStatuses } from '../constants/taskStatuses';
 import { taskPriorities } from '../constants/taskPriorities';
 import { useTeamMembers } from '@/modules/Teams';
 import { ref, onMounted } from 'vue';
+import { getPriorityTagClass, getPriorityLabel } from '../utilities/taskPriority';
+import { getStatusTagClass, getStatusLabel } from '../utilities/taskStatus';
 import Card from 'primevue/card';
 import Select from 'primevue/select';
-import Divider from 'primevue/divider';
 import DatePicker from 'primevue/datepicker';
 import Avatar from '@/shared/components/Avatar.vue';
 
