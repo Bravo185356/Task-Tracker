@@ -84,7 +84,7 @@
 				</div>
 				<div 
 					v-if="firstMessage && !messages.length" 
-					class="flex items-center gap-2 max-md:self-end bg-zinc-500/50 max-md:max-w-[65%] max-md:self-end md:self-start border-1 border-zinc-700/50 rounded-lg p-3 text-sm"
+					class="flex items-center gap-2 max-md:self-end bg-zinc-500/50 max-md:max-w-[65%] md:self-start border border-zinc-700/50 rounded-lg p-3 text-sm"
 				>
 					<span class="text-sm break-all">
 						{{ firstMessage }}
@@ -116,14 +116,14 @@
 					/>
 					<div
 						v-else
-						class="flex items-center gap-1.5 border-1 border-zinc-700/50 rounded px-2 py-2 text-xs w-28"
+						class="flex items-center gap-1.5 border border-zinc-700/50 rounded px-2 py-2 text-xs w-28"
 					>
 						<i class="pi pi-file shrink-0" />
 						<span class="truncate">{{ file.name }}</span>
 					</div>
 					<button
 						type="button"
-						class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full border-1 border-zinc-700/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+						class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full border border-zinc-700/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs"
 						@click="removeFile(idx)"
 					>
 						<i class="pi pi-times text-zinc-400" />
@@ -152,7 +152,7 @@
 					class="flex-1"
                     :pt="{
                         root: {
-                            class: 'max-h-25 max-md:max-h-15 overflow-y-auto! min-h-11!'
+                            class: 'max-h-25 max-md:max-h-15 !overflow-y-auto min-h-11'
                         }
                     }"
 					placeholder="Message…"

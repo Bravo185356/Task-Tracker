@@ -44,7 +44,7 @@
 				<div class="flex flex-col gap-2">
 					<label for="avatar" class="leading-5">Avatar</label>
 					<div class="flex flex-col gap-1">
-						<div class="flex items-center justify-between gap-3 cursor-pointer border-1 border-zinc-700/50 rounded-md p-2 h-[100px]" @click="avatarInputRef?.click()">
+						<div class="flex items-center justify-between gap-3 cursor-pointer border border-zinc-700/50 rounded-md p-2 h-[100px]" @click="avatarInputRef?.click()">
 							<div class="flex flex-col gap-1 items-center px-2">
 								<p>Select an avatar</p>
 								<p class="text-surface-500">JPG, PNG, WEBP or GIF</p>
