@@ -24,7 +24,7 @@ export class ChatsAPI {
 			};
 			
 			files.forEach((file) => formData.append('files', file));
-			return httpClient.postForm<Message>(`/teams/${teamId}/chats/${chatId}/messages`, formData);
+			return httpClient.post<Message>(`/teams/${teamId}/chats/${chatId}/messages`, formData);
 		}
 		return httpClient.post<Message>(`/teams/${teamId}/chats/${chatId}/messages`, { body: message });
 	}

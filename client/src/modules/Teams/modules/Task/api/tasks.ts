@@ -22,7 +22,7 @@ export class TasksAPI {
 	static async uploadAttachments(taskId: string, files: File[]): Promise<Task> {
 		const formData = new FormData();
 		files.forEach((file) => formData.append('files', file));
-		return httpClient.postForm<Task>(`/tasks/${taskId}/attachments`, formData);
+		return httpClient.post<Task>(`/tasks/${taskId}/attachments`, formData);
 	}
 
 	static async deleteAttachment(taskId: string, attachmentId: string): Promise<Task> {
@@ -37,7 +37,7 @@ export class TasksAPI {
 		const formData = new FormData();
 		formData.append('body', body);
 		files.forEach((file) => formData.append('files', file));
-		return httpClient.postForm<Task>(`/tasks/${taskId}/comments`, formData);
+		return httpClient.post<Task>(`/tasks/${taskId}/comments`, formData);
 	}
 
 	static async deleteComment(taskId: string, commentId: string): Promise<Task> {

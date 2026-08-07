@@ -114,14 +114,7 @@ class HttpClient {
 	post<T>(endpoint: string, data: unknown): Promise<T> {
 		return this.request<T>(endpoint, {
 			method: 'POST',
-			body: JSON.stringify(data),
-		});
-	}
-
-	postForm<T>(endpoint: string, data: FormData): Promise<T> {
-		return this.request<T>(endpoint, {
-			method: 'POST',
-			body: data,
+			body: data instanceof FormData ? data : JSON.stringify(data),
 		});
 	}
 
@@ -141,7 +134,7 @@ class HttpClient {
 	patch<T>(endpoint: string, data: unknown, headers?: Record<string, string>): Promise<T> {
 		return this.request<T>(endpoint, {
 			method: 'PATCH',
-			body: JSON.stringify(data),
+			body: data instanceof FormData ? data : JSON.stringify(data),
 			headers,
 		});
 	}

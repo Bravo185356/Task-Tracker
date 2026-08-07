@@ -14,7 +14,7 @@ export class AuthAPI {
 		if (avatar) {
 			formData.append('avatar', avatar);
 		}
-		return httpClient.postForm<AuthResponse>('/auth/register', formData);
+		return httpClient.post<AuthResponse>('/auth/register', formData);
 	}
 	
 	static async getCurrentUser(): Promise<AuthResponse>	 {

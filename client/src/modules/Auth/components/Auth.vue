@@ -3,7 +3,7 @@
 		:visible="visible"
 		modal
 		:header="isRegister ? 'Registration' : 'Login'"
-		:style="{ width: '25rem' }"
+		:style="{ width: '30rem' }"
 		@update:visible="emit('update:visible', $event)"
 	>
 		<Login 
