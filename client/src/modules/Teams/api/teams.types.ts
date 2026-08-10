@@ -10,7 +10,16 @@ interface InviteUserRequest {
 	teamId: string;
 }
 
+interface TeamStatisticFields {
+	totalTasks: number;
+	tasksCompleted: number;
+	tasksInProgress: number;
+	tasksTodo: number;
+	unassignedTasks: number;
+}
+
 export type { 
 	CreateTeamRequest, 
 	InviteUserRequest,
+	TeamStatisticFields,
 };

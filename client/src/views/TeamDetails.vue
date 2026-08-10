@@ -39,9 +39,8 @@
 		</header>
 		<section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
 			<Card
-				v-for="block in STAT_CONFIG"
+				v-for="block in statConfig"
 				:key="block.label"
-				class="  rounded-xl border border-zinc-700/50 bg-zinc-900/60 shadow-sm"
 				:pt="{ 
 					body: { class: '!px-4 !py-3' }, 
 					content: { class: 'flex flex-col gap-2' }
@@ -83,6 +82,7 @@
 			</article>
 		</div>
 	</section>
+    <TeamDetailsSkeleton v-else />
 	<CreateTaskModal
 		v-if="isCreateTaskDialogOpen"
 		v-model:visible="isCreateTaskDialogOpen"
@@ -92,16 +92,27 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { useQuery } from '@tanstack/vue-query';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { 
 	TeamsAPI,
 	CreateTaskModal, 
 	useTeamsStore,
 	TaskCard,
+	type TeamStatisticFields,
 } from '@/modules/Teams';
 import Button from 'primevue/button';
 import ProgressBar from 'primevue/progressbar';
 import Card from 'primevue/card';
+import TeamDetailsSkeleton from '@/modules/Teams/components/TeamDetailsSkeleton.vue';
+
+type statisticItem = {
+    key: keyof TeamStatisticFields;
+    label: string;
+    value: number;
+    icon: string;
+    color: string;
+    barColor: string;
+}
 
 const route = useRoute();
 const router = useRouter();
@@ -115,42 +126,52 @@ const { data: team } = useQuery({
 	queryFn: () => TeamsAPI.getTeamInfo(teamId),
 });
 
-const totalTasks = team.value!.statistic.totalTasks;
-const STAT_CONFIG = [
-	{
-		label: 'Total Tasks',
-		value: team.value!.statistic.totalTasks,
-		icon: 'pi-list',
-		color: 'text-zinc-300',
-		barColor: '!bg-zinc-400',
-	},
-	{
-		label: 'Completed',
-		value: team.value!.statistic.tasksCompleted,
-		icon: 'pi-check-circle',
-		color: 'text-green-400',
-		barColor: '!bg-green-500',
-	},
-	{
-		label: 'In Progress',
-		value: team.value!.statistic.tasksInProgress,
-		icon: 'pi-spinner',
-		color: 'text-blue-400',
-		barColor: '!bg-blue-500',
-	},
-	{
-		label: 'Todo',
-		value: team.value!.statistic.tasksTodo,
-		icon: 'pi-circle',
-		color: 'text-yellow-400',
-		barColor: '!bg-yellow-500',
-	},
-	{
-		label: 'Unassigned',
-		value: team.value!.statistic.unassignedTasks,
-		icon: 'pi-user-minus',
-		color: 'text-red-400',
-		barColor: '!bg-red-500',
-	},
+const totalTasks = computed(() => team.value!.statistic.totalTasks);
+const statConfigMeta: Omit<statisticItem, 'value'>[] = [
+    {
+        key: 'totalTasks',
+        label: 'Total Tasks',
+        icon: 'pi-list',
+        color: 'text-zinc-300',
+        barColor: '!bg-zinc-400',
+    },
+    {
+        key: 'tasksCompleted',
+        label: 'Completed',
+        icon: 'pi-spinner',
+        color: 'text-blue-400',
+        barColor: '!bg-blue-500',
+    },
+    {
+        key: 'tasksInProgress',
+        label: 'In Progress',
+        icon: 'pi-spinner',
+        color: 'text-blue-400',
+        barColor: '!bg-blue-500',
+    },
+    {
+        key: 'tasksTodo',
+        label: 'Todo',
+        icon: 'pi-circle',
+        color: 'text-yellow-400',
+        barColor: '!bg-yellow-500',
+    },
+    {
+        key: 'unassignedTasks',
+        label: 'Unassigned',
+        icon: 'pi-user-minus',
+        color: 'text-red-400',
+        barColor: '!bg-red-500',
+    },
 ];
+
+const statConfig = computed<statisticItem[]>(() => {
+    if(team.value) {
+        return statConfigMeta.map((item) => ({
+            ...item,
+            value: team.value.statistic[item.key],
+        }));
+    }
+    return [];
+});
 </script>

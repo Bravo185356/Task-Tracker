@@ -1,8 +1,5 @@
 <template>
-	<div v-if="!isReady" class="flex justify-center items-center flex-1">
-		<ProgressSpinner />
-	</div>
-	<div v-else class="relative flex flex-1 gap-6">
+	<div class="relative flex flex-1 gap-6">
 		<MainPanel v-if="showMainPanel" />
 		<router-view />
 	</div>
@@ -15,7 +12,6 @@ import { useQuery } from '@tanstack/vue-query';
 import { BoardsAPI, TeamsAPI, ChatsAPI, useTeamChatsWs, MainPanel, useTeamsStore } from '@/modules/Teams';
 import { useAuthStore } from '@/modules/Auth';
 import { useToast } from 'primevue/usetoast';
-import ProgressSpinner from 'primevue/progressspinner';
 
 const route = useRoute();
 const teamsStore = useTeamsStore();
@@ -25,24 +21,23 @@ const router = useRouter();
 
 const teamId = computed(() => route.params.teamId as string);
 const showMainPanel = computed(() => route.name !== 'ChatPage' && route.name !== 'NewChatPage');
-const isReady = computed(() => team.value && boards.value && chats.value);
 const enabledBoardsAndChats = computed(() => !!team.value);
 
 useTeamChatsWs(teamId);
 
-const { data: team, error: isTeamError } = useQuery({
+const { data: team, isLoading: isTeamLoading, error: isTeamError } = useQuery({
 	queryKey: ['team', teamId.value],
 	queryFn: () => TeamsAPI.getTeamInfo(teamId.value),
 	retry: false,
 });
 
-const { data: boards } = useQuery({
+useQuery({
 	queryKey: ['boards', teamId.value],
 	queryFn: () => BoardsAPI.getBoards(teamId.value),
 	enabled: enabledBoardsAndChats
 });
 
-const { data: chats } = useQuery({
+useQuery({
 	queryKey: ['chats', teamId.value],
 	queryFn: () => ChatsAPI.getChats(teamId.value),
 	enabled: enabledBoardsAndChats
@@ -60,8 +55,8 @@ watch(isTeamError, () => {
 	}
 });
 
-watch(isReady, () => {
-	if (isReady.value) {
+watch(isTeamLoading, () => {
+	if (!isTeamLoading.value) {
 		teamsStore.myRole = team.value!.members?.find((member) => member.userId === authStore.user?.id)!.role;
 	}
 });

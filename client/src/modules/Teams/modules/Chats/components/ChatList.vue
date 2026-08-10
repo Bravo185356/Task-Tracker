@@ -25,9 +25,9 @@
                 </Popover>
             </div>
         </div>
-        <nav :class="{ 'py-4': isChatPage }">
+        <nav v-if="!isLoading" :class="{ 'py-4': isChatPage }">
             <ul v-if="chats?.length" class="flex flex-col gap-2">
-                <li v-for="chat in chats" :key="chat.id" class="cursor-pointer block hover:bg-gray-500/50 px-4 py-2 transition-colors flex justify-between gap-2" :class="{ 'bg-zinc-500/50': chat.id === activeChatId }" @click="onChatSelect(chat)">
+                <li v-for="chat in chats" :key="chat.id" class="cursor-pointer hover:bg-gray-500/50 px-4 py-2 transition-colors flex justify-between gap-2" :class="{ 'bg-zinc-500/50': chat.id === activeChatId }" @click="onChatSelect(chat)">
                     <div class="flex gap-2 min-w-0">
                         <Avatar :url="getAvatarUrl(chat)" />
                         <div class="flex flex-col gap-1 max-w-[70%]">
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                 </li>
-                <li v-if="userId && !isChatCreated" class="cursor-pointer block hover:bg-gray-500/50 px-4 py-2 transition-colors flex gap-2" :class="{ 'bg-zinc-500/50': userId === activeChatId }">
+                <li v-if="userId && !isChatCreated" class="cursor-pointer hover:bg-gray-500/50 px-4 py-2 transition-colors flex gap-2" :class="{ 'bg-zinc-500/50': userId === activeChatId }">
                     <Avatar :url="getAvatarUrl()" shape="circle" />
                     <div class="flex flex-col gap-1">
                         <span class="leading-tight truncate">{{ getDraftChatName() }}</span>
@@ -63,6 +63,9 @@
                 No Chats Found
             </div>
         </nav>
+        <div v-else class="px-4 py-2">
+            <Skeleton class="w-full !h-[56px]" />
+        </div>
     </div>
 </template>
 
@@ -78,6 +81,7 @@ import { getDateString } from '@/shared/utilities/getDateString';
 import { useConfirm } from 'primevue/useconfirm';
 import Avatar from '@/shared/components/Avatar.vue';
 import Popover from 'primevue/popover';
+import Skeleton from 'primevue/skeleton';
 
 const props = defineProps<{
     teamId: string;
@@ -106,7 +110,7 @@ const isChatCreated = computed(() =>
     chat.participants.some((participant) => participant.userId === userId.value))
 );
 
-const { data: chats } = useQuery({
+const { data: chats, isLoading } = useQuery({
     queryKey: ['chats', props.teamId],
     queryFn: () => ChatsAPI.getChats(props.teamId),
 });

@@ -23,7 +23,8 @@ export {
 	useMarkRead 
 } from './modules/Chats';
 
-export { TeamsAPI } from './api/teams';
+export type { TeamStatisticFields } from './api/teams.types';
+export { TeamsAPI } from './api/teams'
 export { useTeamsStore } from './store';
 export { useTeamMembers } from './composables/useTeamMembers';
 

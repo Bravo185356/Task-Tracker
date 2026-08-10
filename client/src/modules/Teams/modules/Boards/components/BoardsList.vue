@@ -15,29 +15,34 @@
                 @click="emit('createBoard')" 
             />
         </div>
-        <ul v-if="boards && boards.length">
-            <li 
-                v-for="board in boards" 
-                :key="board.id" 
-                class="group cursor-pointer transition-colors hover:bg-gray-500/50 px-4 py-2"
-            >
-                <RouterLink :to="`/teams/${teamId}/boards/${board.id}`" class="flex gap-3 justify-between items-center">
-                    <span class="flex-1 truncate">{{ board.name }}</span>
-                    <button
-                        v-if="teamsStore.isAdminOrOwner"
-                        type="button"
-                        class="opacity-0 group-hover:opacity-100 items-center cursor-pointer justify-center transition-colors rounded-md text-red-400 hover:text-red-500"
-                        @click.stop.prevent="handleDeleteBoard(board.id)"
-                    >
-                        <i class="pi pi-trash" />
-                    </button>
-                </RouterLink>
-            </li>
-        </ul>
-        <div v-else>
-            <p class="text-zinc-400 text-sm px-4">
-                No Boards Found
-            </p>
+        <div v-if="!isLoading">
+            <ul v-if="boards && boards.length">
+                <li 
+                    v-for="board in boards" 
+                    :key="board.id" 
+                    class="group cursor-pointer transition-colors hover:bg-gray-500/50 px-4 py-2"
+                >
+                    <RouterLink :to="`/teams/${teamId}/boards/${board.id}`" class="flex gap-3 justify-between items-center">
+                        <span class="flex-1 truncate">{{ board.name }}</span>
+                        <button
+                            v-if="teamsStore.isAdminOrOwner"
+                            type="button"
+                            class="opacity-0 group-hover:opacity-100 items-center cursor-pointer justify-center transition-colors rounded-md text-red-400 hover:text-red-500"
+                            @click.stop.prevent="handleDeleteBoard(board.id)"
+                        >
+                            <i class="pi pi-trash" />
+                        </button>
+                    </RouterLink>
+                </li>
+            </ul>
+            <div v-else>
+                <p class="text-zinc-400 text-sm px-4">
+                    No Boards Found
+                </p>
+            </div>
+        </div>
+        <div v-else class="px-4">
+            <Skeleton class="w-full !h-[40px]" />
         </div>
     </div>
 </template>
@@ -51,6 +56,7 @@ import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import { ref } from 'vue';
 import ProgressSpinner from 'primevue/progressspinner';
+import Skeleton from 'primevue/skeleton';
 
 const props = defineProps<{
     teamId: string;
@@ -97,7 +103,7 @@ const { mutate: deleteBoard } = useMutation({
     },
 });
 
-const { data: boards } = useQuery({
+const { data: boards, isLoading } = useQuery({
 	queryKey: ['boards', props.teamId],
 	queryFn: () => BoardsAPI.getBoards(props.teamId),
 });
