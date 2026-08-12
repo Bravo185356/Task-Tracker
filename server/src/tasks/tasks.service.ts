@@ -64,7 +64,6 @@ export class TasksService {
 				boardId: createTaskDto.boardId,
 				teamId: createTaskDto.teamId,
 				status: createTaskDto.status ? createTaskDto.status : TaskStatus.TODO,
-				...(createTaskDto.status && { status: createTaskDto.status }),
 				...(createTaskDto.startedAt !== undefined && { startedAt: createTaskDto.startedAt }),
 				...(createTaskDto.endedAt !== undefined && { endedAt: createTaskDto.endedAt }),
 			},
@@ -99,6 +98,11 @@ export class TasksService {
 				...(filters?.boardId && { boardId: filters.boardId }),
 				...(filters?.assignedTo && { assignedTo: filters.assignedTo }),
 			},
+            include: {
+                assigned: {
+                    select: { id: true, username: true, avatar: true },
+                }
+            }
 		});
 	}
 	
