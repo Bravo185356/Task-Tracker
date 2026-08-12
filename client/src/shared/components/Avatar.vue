@@ -1,10 +1,9 @@
 <template>
 	<Avatar 
 		v-if="!url" 
-		:style="{ width: `${size}px`, height: `${size}px` }"
+		:pt="{ root: { style: { width: `${size}px`, height: `${size}px` } } }"
 		icon="pi pi-user"
 		shape="circle"
-		class="bg-zinc-700"
 	/>
 	<Avatar 
 		v-else 

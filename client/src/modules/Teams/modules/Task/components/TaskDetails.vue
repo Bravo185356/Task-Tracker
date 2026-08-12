@@ -20,10 +20,10 @@
 								<div v-if="slotProps.value" class="flex items-center gap-1">
 									<Avatar 
 										class="shrink-0"
-										:url="getUserAvatar(slotProps.value) ?? null"
+										:url="task.assigned?.avatar ?? null"
 										:size="25"
 									/>
-									<div>{{ getUsername(slotProps.value) }}</div>
+									<div>{{ task.assigned?.username ?? 'Unassigned' }}</div>
 								</div>
 								<span v-else>
 									{{ slotProps.placeholder }}
@@ -160,14 +160,6 @@ function toDateOnlyString(d: Date): string {
   const day = String(d.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
-	
-const getUsername = (id: string) => {
-	return teamMembers?.find(member => member.userId === id)?.username;
-};
-
-const getUserAvatar = (id: string) => {
-	return teamMembers?.find(member => member.userId === id)?.avatar;
-};
 
 onMounted(() => {
 	if(props.task.startedAt || props.task.endedAt) {

@@ -1,39 +1,30 @@
 <template>
-	<Card class="h-full transition-all duration-200" :pt="{ body: { class: '!p-0' }, content: { class: '!p-0' } }">
+	<Card class="h-full transition-all duration-200">
 		<template #content>
-			<article class="flex h-full flex-col gap-4 rounded-xl p-4">
+			<article class="flex h-full flex-col gap-4 rounded-xl">
 				<header class="flex items-start justify-between gap-3">
-					<RouterLink :to="`/teams/${teamId}/tasks/${task.id}`" class="max-w-[80%]">
+					<RouterLink :to="`/teams/${teamId}/tasks/${task.id}`" class="max-w-[40%]">
 						<h4 class="text-lg font-semibold leading-6 transition-colors hover:text-blue-400 truncate">
 							{{ task.title }}
 						</h4>
 					</RouterLink>
-					<Tag
-						v-if="task.priority"
-						:value="getPriorityLabel(task.priority)"
-						:class="getPriorityTagClass(task.priority)"
-					/>
+                    <div class="flex items-center gap-2">
+                        <Tag
+                            v-if="task.priority"
+                            :value="getPriorityLabel(task.priority)"
+                            :class="getPriorityTagClass(task.priority)"
+                        />
+                        <Tag
+                            :value="getStatusLabel(task.status)"
+                            :class="getStatusTagClass(task.status)"
+                        />
+                    </div>
 				</header>
 				<div class="flex flex-wrap items-center gap-2">
-					<Tag
-						:value="getStatusLabel(task.status)"
-						:class="getStatusTagClass(task.status)"
-						:pt="{ root: { class: 'h-[30px]' } }"
-					/>
-					<Tag
-						severity="secondary"
-						:pt="{ root: { class: ' h-[30px]' } }"
-					>
-						<div class="flex items-center gap-1">
-							<Avatar
-								v-if="assignedUser"
-								:size="22"
-								:url="assignedUser.avatar"
-							/>
-							<i v-else class="pi pi-user text-zinc-400" />
-							<span class="text-xs text-zinc-400">{{ assignedUser?.username ?? 'Unassigned' }}</span>
-						</div>
-					</Tag>
+                    <div class="flex items-center gap-1">
+                        <Avatar :size="28" :url="task.assigned?.avatar ?? null" />
+                        <span class="text-sm font-medium text-zinc-400">{{ task.assigned?.username ?? 'Unassigned' }}</span>
+                    </div>
 				</div>
 				<footer class="mt-auto flex items-center gap-2 text-xs text-zinc-400">
 					<i class="pi pi-calendar" />
@@ -45,10 +36,9 @@
 </template>
 
 <script setup lang="ts">
-import type { Task, Team } from '@/shared/types/entities';
+import type { Task } from '@/shared/types/entities';
 import { getPriorityTagClass, getPriorityLabel } from '../utilities/taskPriority';
 import { getStatusTagClass, getStatusLabel } from '../utilities/taskStatus';
-import { useQueryClient } from '@tanstack/vue-query';
 import { computed } from 'vue';
 import Card from 'primevue/card';
 import Tag from 'primevue/tag';
@@ -58,18 +48,7 @@ const props = defineProps<{
 	task: Task;
 }>();
 
-const queryClient = useQueryClient();
-
 const teamId = props.task.teamId;
-const team = queryClient.getQueryData<Team>(['team', teamId]);
-
-const assignedUser = computed(() => {
-	if (!props.task.assignedTo) {
-		return null;
-	}
-	
-	return team!.members.find((member) => member.userId === props.task.assignedTo);
-});
 
 const dueDateLabel = computed(() => {
 	if (!props.task.startedAt && !props.task.endedAt) {

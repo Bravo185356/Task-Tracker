@@ -25,15 +25,15 @@
                 <Skeleton v-for="i in 5" :key="i" class="w-full !h-[84px] !rounded-xl" />
             </div>
             <div class="flex flex-col gap-3">
-                <Skeleton class="!w-28 !h-[28px]" />
+                <h2 class="text-lg font-bold">New Tasks</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 list-none">
-                    <Skeleton v-for="i in 3" :key="i" class="!w-full !h-[139px] !rounded-xl" />
+                    <TaskCardSkeleton v-for="i in 3" :key="i" />
                 </div>
             </div>
             <div class="flex flex-col gap-3">
-                <Skeleton class="!w-28 !h-[28px]" />
+                <h2 class="text-lg font-bold">Recently Completed Tasks</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 list-none">
-                    <Skeleton v-for="i in 3" :key="i" class="!w-full !h-[139px] !rounded-xl" />
+                    <TaskCardSkeleton v-for="i in 3" :key="i" />
                 </div>
             </div>
         </div>
@@ -43,4 +43,5 @@
 <script setup lang="ts">
 import Skeleton from 'primevue/skeleton';
 import Button from 'primevue/button';
+import TaskCardSkeleton from '../modules/Task/components/TaskCardSkeleton.vue';
 </script>

@@ -9,6 +9,7 @@ export {
 	useTaskDetailsWs, 
 	TaskFilters, 
 	TaskCard, 
+	TaskCardSkeleton,
 	TaskDetails,
 	TaskAttachments,
 	TaskComments

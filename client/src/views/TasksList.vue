@@ -22,10 +22,12 @@
 				@reset="resetActiveFilters"
 			/>
 			<div class="flex-1 min-w-0">
-				<div v-if="isInitialLoading" class="flex justify-center items-center min-h-96">
-					<ProgressSpinner />
+				<div v-if="isInitialLoading" class="flex justify-center items-center">
+                    <div class="flex flex-col gap-3 pr-1 flex-1">
+                        <TaskCardSkeleton v-for="i in 2" :key="i" />
+                    </div>
 				</div>
-				<div v-if="tasks?.length === 0" class="flex flex-col items-center justify-center min-h-48 gap-2 text-zinc-400">
+				<div v-else-if="tasks?.length === 0" class="flex flex-col items-center justify-center min-h-48 gap-2 text-zinc-400">
 					<i class="pi pi-filter text-3xl" />
 					<span class="text-sm">No tasks match the selected filters</span>
 				</div>
@@ -46,6 +48,7 @@ import {
 	BoardsAPI, 
 	TaskFilters,
     TaskCard,
+    TaskCardSkeleton,
 	type TaskFiltersModel 
 } from '@/modules/Teams';
 import { useRoute, useRouter } from 'vue-router';
