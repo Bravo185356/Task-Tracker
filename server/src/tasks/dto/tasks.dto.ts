@@ -105,6 +105,12 @@ export class CommentAuthorResponseDto {
 	@Expose() avatar: string | null;
 }
 
+export class AssignedUserResponseDto {
+    @Expose() id: string;
+    @Expose() username: string;
+    @Expose() avatar: string | null;
+  }
+
 export class TaskCommentResponseDto {
 	@Expose() id: string;
 	@Expose() taskId: string;
@@ -119,16 +125,17 @@ export class TaskCommentResponseDto {
 export class TaskResponseDto {
 	@Expose() id: string;
 	@Expose() title: string;
-	@Expose() description?: string;
+	@Expose() description: string | null;
 	@Expose() status: TaskStatus;
-	@Expose() boardId?: string;
+	@Expose() boardId: string | null;
 	@Expose() teamId: string;
-	@Expose() priority?: Priority;
+	@Expose() priority: Priority | null;
 	@Expose() createdAt: Date;
 	@Expose() updatedAt: Date;
-	@Expose() startedAt?: Date | null;
-	@Expose() endedAt?: Date | null;
-	@Expose() @IsUUID() assignedTo?: string;
+	@Expose() startedAt: Date | null;
+	@Expose() endedAt: Date | null;
+	@Expose() assignedTo: string | null;
+	@Expose() @Type(() => AssignedUserResponseDto) assigned: AssignedUserResponseDto | null;
 	@Expose() @Type(() => TaskAttachment) attachments?: TaskAttachment[];
 	@Expose() @Type(() => TaskCommentResponseDto) comments?: TaskCommentResponseDto[];
 }

@@ -196,6 +196,15 @@ export class TeamsService {
         teamId,
         status: { not: TaskStatus.DONE },
       },
+      include: {
+        assigned: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
       take: LAST_TASK_LIMIT,
     })
@@ -204,6 +213,15 @@ export class TeamsService {
       where: {
         teamId,
         status: TaskStatus.DONE,
+      },
+      include: {
+        assigned: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
       },
       orderBy: { updatedAt: 'desc' },
       take: LAST_TASK_LIMIT,

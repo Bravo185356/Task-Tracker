@@ -8,6 +8,7 @@ import { basename } from 'path';
 import type { UploadedFileMeta } from '../storage/cloudinary.service';
 
 const TASK_INCLUDE = {
+	assigned: { select: { id: true, username: true, avatar: true } },
 	attachments: true,
 	comments: {
 		include: {
