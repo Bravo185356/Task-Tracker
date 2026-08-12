@@ -83,6 +83,11 @@ createApp(App)
 		theme: {
 			preset: ZincPreset,
 		},
+        pt: {
+            card: {
+                body: { class: '!p-4'}
+            }
+        }
 	})
 	.use(ToastService)
 	.use(ConfirmationService)
