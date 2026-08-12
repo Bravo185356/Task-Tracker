@@ -52,16 +52,16 @@ interface Board {
 interface Task {
 	id: string;
 	title: string;
-	description?: string;
+	description: string | null;
 	assignedTo: string | null;
-	assigned?: User;
+	assigned: User | null;
 	status: string;
-	boardId: string;
+	boardId: string | null;
 	teamId: string;
 	createdAt: string;
 	updatedAt: string;
 	order: number | null;
-	priority: Priority;
+	priority: Priority | null;
 	startedAt: string | null;
 	endedAt: string | null;
 	attachments: Attachment[];

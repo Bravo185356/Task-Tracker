@@ -1,5 +1,5 @@
 import type { Task } from '@/shared/types/entities';
-import type { CreateTaskRequest, GetTasksQuery } from './tasks.types';
+import type { CreateTaskRequest, GetTasksQuery, PatchTaskRequest } from './tasks.types';
 import { httpClient } from '@/app/config/httpClient';
 
 export class TasksAPI {
@@ -15,7 +15,7 @@ export class TasksAPI {
 		return httpClient.get(`/tasks/${taskId}`);
 	}
 
-	static async patchTask(taskId: string, data: Partial<Task>): Promise<Task> {
+	static async patchTask(taskId: string, data: PatchTaskRequest): Promise<Task> {
 		return httpClient.patch<Task>(`/tasks/${taskId}`, data);
 	}
 
