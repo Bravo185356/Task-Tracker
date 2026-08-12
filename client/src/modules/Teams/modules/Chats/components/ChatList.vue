@@ -102,7 +102,9 @@ const router = useRouter();
 const teamMembers = useTeamMembers(props.teamId);
 
 const isChatPage = computed(() => route.name === 'ChatPage' || route.name === 'NewChatPage');
-const otherMembers = computed(() => teamMembers?.filter((member) => member.userId !== authStore.user?.id));
+const otherMembers = computed(() =>
+	teamMembers.value.filter((member) => member.userId !== authStore.user?.id),
+);
 const userId = computed(() => route.params.userId as string);
 const isChatCreated = computed(() => 
     chats.value?.some((chat) => 
@@ -117,7 +119,7 @@ const { data: chats, isLoading } = useQuery({
 
 const getAvatarUrl = (chat?: Chat) => {
     if (!chat) {
-        return teamMembers.find((member) => member.userId === userId.value)!.avatar;
+        return teamMembers.value.find((member) => member.userId === userId.value)!.avatar;
     }
 
     const otherUser = chat.participants.find((p) => p.userId !== authStore.user?.id)!;
