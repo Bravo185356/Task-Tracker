@@ -1,5 +1,5 @@
 <template>
-	<Card class="">
+	<Card>
 		<template #content>
 			<div class="flex justify-between items-center gap-2">
 				<div class="flex items-center gap-2">
@@ -19,12 +19,12 @@
 			</p>
 			<div class="flex gap-2 mt-4">
 				<Button
-				label="View"
-				icon="pi pi-eye"
-				severity="primary"
-				outlined
-				fluid
-				@click="handleView"
+                    label="View"
+                    icon="pi pi-eye"
+                    severity="primary"
+                    outlined
+                    fluid
+                    @click="handleView"
 				/>
 			</div>
 		</template>

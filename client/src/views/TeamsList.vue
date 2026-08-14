@@ -11,8 +11,8 @@
 			/>
 		</div>
 
-		<div v-if="isLoading" class="flex justify-center items-center flex-1">
-			<ProgressSpinner />
+		<div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <TeamCardSkeleton v-for="i in 3" :key="i" />
 		</div>
 
 		<div v-else-if="error" class="flex justify-center items-center flex-1">
@@ -62,9 +62,9 @@ import {
 	useTeamsStore, 
 	CreateTeamModal, 
 	TeamCard,
+	TeamCardSkeleton,
 } from '@/modules/Teams';
 import Button from 'primevue/button';
-import ProgressSpinner from 'primevue/progressspinner';
 import Message from 'primevue/message';
 
 const teamsStore = useTeamsStore();

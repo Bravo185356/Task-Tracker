@@ -30,6 +30,7 @@ export { useTeamsStore } from './store';
 export { useTeamMembers } from './composables/useTeamMembers';
 
 export { default as TeamCard } from './components/TeamCard.vue';
+export { default as TeamCardSkeleton } from './components/TeamCardSkeleton.vue';
 export { default as CreateTeamModal } from './components/CreateTeamModal.vue';
 export { default as CreateTaskModal } from './components/CreateTaskModal.vue';
 export { default as InviteUserModal } from './components/InviteUserModal.vue';
