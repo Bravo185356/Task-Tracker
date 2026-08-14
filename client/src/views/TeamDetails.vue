@@ -64,22 +64,22 @@
 			</Card>
 		</section>
 		<div class="flex flex-col gap-6">
-			<article v-if="team.lastCreatedTasks && team.lastCreatedTasks.length">
+			<section v-if="team.lastCreatedTasks && team.lastCreatedTasks.length">
 				<h2 class="text-lg font-bold mb-3">New Tasks</h2>
 				<ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 list-none">
 					<li v-for="task in team.lastCreatedTasks" :key="task.id">
 						<TaskCard :task="task" />
 					</li>
 				</ul>
-			</article>
-			<article v-if="team.lastCompletedTasks && team.lastCompletedTasks.length">
+			</section>
+			<section v-if="team.lastCompletedTasks && team.lastCompletedTasks.length">
 				<h2 class="text-lg font-bold mb-3">Recently Completed Tasks</h2>
 				<ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 list-none">
 					<li v-for="task in team.lastCompletedTasks" :key="task.id">
 						<TaskCard :task="task" />
 					</li>
 				</ul>
-			</article>
+			</section>
 		</div>
 	</section>
     <TeamDetailsSkeleton v-else />
