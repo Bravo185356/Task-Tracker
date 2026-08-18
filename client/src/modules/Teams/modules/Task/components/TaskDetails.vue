@@ -21,9 +21,9 @@
 									<Avatar 
 										class="shrink-0"
 										:url="task.assigned?.avatar ?? null"
-										:size="25"
+										:size="24"
 									/>
-									<div>{{ task.assigned?.username ?? 'Unassigned' }}</div>
+									<div class="text-sm">{{ task.assigned?.username ?? 'Unassigned' }}</div>
 								</div>
 								<span v-else>
 									{{ slotProps.placeholder }}
@@ -110,6 +110,7 @@
 </template>
 
 <script setup lang="ts">
+import type { PatchTaskRequest } from '../api/tasks.types';
 import type { Task } from '@/shared/types/entities';
 import { taskStatuses } from '../constants/taskStatuses';
 import { taskPriorities } from '../constants/taskPriorities';
@@ -127,7 +128,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(e: 'patchTask', data: Partial<Task>): void;
+	(e: 'patchTask', data: Partial<PatchTaskRequest>): void;
 }>();
 
 const teamId = props.task.teamId;

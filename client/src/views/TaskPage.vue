@@ -1,7 +1,5 @@
 <template>
-	<div v-if="isLoading" class="flex flex-1 justify-center items-center min-h-96">
-		<ProgressSpinner />
-	</div>
+	<TaskPageSkeleton v-if="isLoading" />
 	<div v-else-if="task" class="flex-1">
 		<div>
 			<div class="flex items-center justify-between gap-3 mb-4">
@@ -103,7 +101,7 @@ import type { Task } from '@/shared/types/entities';
 import { ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
-import { TaskDetails, useTaskDetailsWs, TasksAPI, TaskComments, TaskAttachments } from '@/modules/Teams';
+import { TaskDetails, useTaskDetailsWs, TasksAPI, TaskComments, TaskAttachments, TaskPageSkeleton, type PatchTaskRequest } from '@/modules/Teams';
 import { useDebouncedField } from '@/shared/composables/useDebouncedField';
 import { useToast } from 'primevue/usetoast';
 import { getDateString } from '@/shared/utilities/getDateString';
@@ -111,7 +109,6 @@ import { useCopyToClipboard } from '@/shared/composables/useCopyToClipboard';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import Divider from 'primevue/divider';
-import ProgressSpinner from 'primevue/progressspinner';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 
@@ -132,7 +129,7 @@ const isDescriptionFocused = ref(false);
 useTaskDetailsWs(taskId);
 
 const { mutate: patchTask } = useMutation({
-	mutationFn: (data: Partial<Task>) => TasksAPI.patchTask(taskId, data),
+	mutationFn: (data: Partial<PatchTaskRequest>) => TasksAPI.patchTask(taskId, data),
 	onSuccess: (updatedTask) => queryClient.setQueryData(['task', taskId], updatedTask),
 });
 

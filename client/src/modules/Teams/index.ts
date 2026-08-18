@@ -4,6 +4,7 @@ export type { CreateChatRequest, CreateMessageRequest } from './modules/Chats';
 export { type CreateBoardRequest, useBoardWebSocket, Column, columns, BoardsAPI } from './modules/Boards';
 export { 
 	type TaskFiltersModel,
+	type PatchTaskRequest,
 	taskDetailsWs, 
 	TasksAPI, 
 	useTaskDetailsWs, 
@@ -11,8 +12,11 @@ export {
 	TaskCard, 
 	TaskCardSkeleton,
 	TaskDetails,
+	TaskDetailsSkeleton,
 	TaskAttachments,
-	TaskComments
+	TaskComments,
+	TaskCommentsSkeleton,
+	TaskPageSkeleton
 } from './modules/Task';
 export { 
 	ChatsAPI, 
