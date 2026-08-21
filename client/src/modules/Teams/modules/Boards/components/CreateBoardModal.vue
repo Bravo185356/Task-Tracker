@@ -1,10 +1,10 @@
 <template>
     <Dialog
-		v-model:visible="props.isOpen"
+		:visible="props.isOpen"
 		header="Create Board"
 		:modal="true"
 		class="w-96"
-        @update:visible="emit('close')"
+        @update:visible="closeModal"
 	>
         <form @submit.prevent="handleCreateBoard">
             <div class="flex flex-col gap-4">
@@ -15,7 +15,7 @@
                     severity="secondary"
                     label="Cancel"
                     fluid
-                    @click="emit('close')"
+                    @click="closeModal"
                 />
                 <Button
                     label="Create"
@@ -65,7 +65,7 @@ const { mutate: createBoard } = useMutation({
 		});
 		
 		queryClient.setQueryData(['boards', teamId], (old: Board[]) => [...old, data]);
-		emit('close');
+        closeModal();
 	},
 	onError: () => {
 		toast.add({
@@ -79,5 +79,10 @@ const { mutate: createBoard } = useMutation({
 
 const handleCreateBoard = () => {
 	createBoard({ name: boardName.value, teamId: teamId.value });
+};
+
+const closeModal = () => {
+	emit('close');
+	boardName.value = '';
 };
 </script>
