@@ -1,14 +1,5 @@
 <template>
 	<div class="flex-1">
-		<div class="flex items-center justify-between gap-3 mb-4">
-			<div class="flex items-center gap-3">
-				<Skeleton shape="circle" size="40px" />
-			</div>
-			<div class="flex items-center gap-2">
-				<Skeleton class="!w-28 !h-8 !rounded-md" />
-				<Skeleton class="!w-32 !h-8 !rounded-md" />
-			</div>
-		</div>
 		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 			<div class="lg:col-span-2 space-y-6">
 				<Card>

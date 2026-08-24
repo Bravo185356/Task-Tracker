@@ -1,42 +1,29 @@
 <template>
 	<section v-if="team" class="flex-1">
-		<header class="flex justify-between items-center mb-6">
-			<div class="flex items-center gap-2">
-				<i 
-					class="pi pi-arrow-left before:text-xl text-zinc-400 transition-colors hover:text-white cursor-pointer p-1" 
-					@click="router.push('/teams')" 
-				/>
-				<h1 class="text-xl leading-6 font-bold">
-					{{ team.name }}
-				</h1>
-				<span class="flex items-center gap-1">
-					<span class="pi pi-users before:text-xl" />
-					<span>{{ team.members?.length || 0 }}</span>
-				</span>
-			</div>
-			<nav class="flex justify-end flex-1 gap-2">
-				<Button
-					label="New Task"
-					icon="pi pi-plus"
-					size="small"
-					@click="isCreateTaskDialogOpen = true"
-				/>
-				<RouterLink :to="`/teams/${teamId}/tasks`">
-					<Button
-						label="All Tasks"
-						size="small"
-						icon="pi pi-list"
-					/>
-				</RouterLink>
-				<RouterLink v-if="teamsStore.isAdminOrOwner" :to="`/teams/${teamId}/manage`">
-					<Button
-						label="Manage Team"
-						icon="pi pi-users"
-						size="small"
-					/>
-				</RouterLink>
-			</nav>
-		</header>
+        <Teleport to="#page-header-actions">
+            <nav class="flex justify-end flex-1 gap-2">
+                <Button
+                    label="New Task"
+                    icon="pi pi-plus"
+                    size="small"
+                    @click="isCreateTaskDialogOpen = true"
+                />
+                <RouterLink :to="`/teams/${teamId}/tasks`">
+                    <Button
+                        label="All Tasks"
+                        size="small"
+                        icon="pi pi-list"
+                    />
+                </RouterLink>
+                <RouterLink v-if="teamsStore.isAdminOrOwner" :to="`/teams/${teamId}/manage`">
+                    <Button
+                        label="Manage Team"
+                        icon="pi pi-users"
+                        size="small"
+                    />
+                </RouterLink>
+            </nav>
+        </Teleport>
 		<section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
 			<Card
 				v-for="block in statConfig"
@@ -90,20 +77,20 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useQuery } from '@tanstack/vue-query';
 import { ref, computed } from 'vue';
 import { 
+	type TeamStatisticFields,
 	TeamsAPI,
 	CreateTaskModal, 
 	useTeamsStore,
 	TaskCard,
-	type TeamStatisticFields,
+    TeamDetailsSkeleton,
 } from '@/modules/Teams';
 import Button from 'primevue/button';
 import ProgressBar from 'primevue/progressbar';
 import Card from 'primevue/card';
-import TeamDetailsSkeleton from '@/modules/Teams/components/TeamDetailsSkeleton.vue';
 
 type statisticItem = {
     key: keyof TeamStatisticFields;
@@ -115,14 +102,13 @@ type statisticItem = {
 }
 
 const route = useRoute();
-const router = useRouter();
 const teamsStore = useTeamsStore();
 
 const teamId = route.params.teamId as string;
 const isCreateTaskDialogOpen = ref(false);
 
 const { data: team } = useQuery({
-	queryKey: ['team', teamId],
+    queryKey: ['team', teamId],
 	queryFn: () => TeamsAPI.getTeamInfo(teamId),
 });
 

@@ -1,5 +1,5 @@
 <template>
-	<Card class="w-86 min-h-[calc(100vh-140px)] overflow-y-auto shrink-0" :pt="{ body: { class: '!px-0' } }">
+	<Card class="w-86 min-h-[calc(100vh-202px)] overflow-y-auto shrink-0" :pt="{ body: { class: '!px-0' } }">
 		<template #content>
 			<BoardsList
                 :team-id="teamId" 

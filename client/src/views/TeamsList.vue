@@ -1,7 +1,7 @@
 <template>
 	<div class="flex flex-col flex-1">
 		<div class="flex justify-between items-center mb-4">
-			<h1 class="mb-4 text-2xl font-bold">
+			<h1 class="text-2xl font-bold">
 				My Teams
 			</h1>
 			<Button

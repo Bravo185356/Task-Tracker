@@ -1,15 +1,5 @@
 <template>
 	<div class="flex flex-col gap-4 flex-1">
-		<div class="flex items-center gap-2">
-			<i 
-				class="pi pi-arrow-left before:text-xl text-zinc-400 transition-colors hover:text-white cursor-pointer p-1" 
-				@click="router.push(`/teams/${teamId}`)" 
-			/>
-			<h1 class="text-xl leading-6 font-bold">Tasks List</h1>
-			<div v-if="isUpdatingTasks && !isInitialLoading" class="!w-6 !h-6">
-				<ProgressSpinner class="!w-full !h-full" stroke-width="6" />
-			</div>
-		</div>
 		<div v-if="tasksError || teamError" class="flex justify-center items-center min-h-96">
 			<p class="text-zinc-400 text-sm">{{ tasksError?.message || teamError?.message }}</p>
 		</div>
@@ -18,6 +8,7 @@
 				:filters="activeFilters"
 				:team="team"
 				:boards="boards"
+                :is-loading="isUpdatingTasks"
 				@update="updateActiveFilters"
 				@reset="resetActiveFilters"
 			/>
@@ -27,15 +18,23 @@
                         <TaskCardSkeleton v-for="i in 2" :key="i" />
                     </div>
 				</div>
-				<div v-else-if="tasks?.length === 0" class="flex flex-col items-center justify-center min-h-48 gap-2 text-zinc-400">
-					<i class="pi pi-filter text-3xl" />
-					<span class="text-sm">No tasks match the selected filters</span>
+				<div v-else-if="tasks?.length === 0" class="flex flex-col items-center flex-1 justify-center min-h-24">
+					<div class="flex items-center justify-center gap-2 mb-3">
+                        <i class="pi pi-filter text-3xl" />
+                        <span class="font-bold text-xl">No Tasks Found</span>
+                    </div>
+                    <Button                       
+                        label="Create Task"
+                        icon="pi pi-plus"
+                        @click="isCreateTaskDialogOpen = true"
+                    />
 				</div>
 				<div v-else class="flex flex-col gap-3 overflow-y-auto pr-1">
 					<TaskCard v-for="task in tasks" :key="task.id" :task="task" />
 				</div>
 			</div>
 		</div>
+        <CreateTaskModal :visible="isCreateTaskDialogOpen" @update:visible="isCreateTaskDialogOpen = $event" />
 	</div>
 </template>
 
@@ -43,21 +42,22 @@
 import { ref, computed } from 'vue';
 import { useQuery, keepPreviousData } from '@tanstack/vue-query';
 import { 
+	type TaskFiltersModel,
 	TasksAPI, 
 	TeamsAPI, 
 	BoardsAPI, 
 	TaskFilters,
     TaskCard,
     TaskCardSkeleton,
-	type TaskFiltersModel 
+    CreateTaskModal
 } from '@/modules/Teams';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useDebouncedField } from '@/shared/composables/useDebouncedField';
-import ProgressSpinner from 'primevue/progressspinner';
+import Button from 'primevue/button';
 
 const route = useRoute();
 const teamId = route.params.teamId as string;
-const router = useRouter();
+const isCreateTaskDialogOpen = ref(false);
 
 const activeFilters = ref<TaskFiltersModel>({
 	title: '',

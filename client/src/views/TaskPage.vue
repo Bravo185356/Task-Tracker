@@ -1,40 +1,25 @@
 <template>
 	<TaskPageSkeleton v-if="isLoading" />
 	<div v-else-if="task" class="flex-1">
-		<div>
-			<div class="flex items-center justify-between gap-3 mb-4">
-				<div class="flex items-center gap-3">
-					<router-link :to="`/teams/${teamId}`">
-						<Button
-							icon="pi pi-arrow-left"
-							text
-							rounded
-							severity="secondary"
-							class="text-zinc-300 hover:text-white"
-						/>
-					</router-link>
-				</div>
-
-				<div class="flex items-center gap-2">
-					<Button
-						label="Copy Link"
-						icon="pi pi-link"
-						outlined
-						size="small"
-						@click="handleCopyLink"
-					/>
-					<Button
-						label="Delete Task"
-						icon="pi pi-trash"
-						outlined
-						severity="danger"
-						size="small"
-						@click="handleDeleteTask"
-					/>
-				</div>
-			</div>
-		</div>
-
+        <Teleport to="#page-header-actions">
+            <div class="flex items-center gap-2">
+                <Button
+                    label="Copy Link"
+                    icon="pi pi-link"
+                    outlined
+                    size="small"
+                    @click="handleCopyLink"
+                />
+                <Button
+                    label="Delete Task"
+                    icon="pi pi-trash"
+                    outlined
+                    severity="danger"
+                    size="small"
+                    @click="handleDeleteTask"
+                />
+            </div>
+        </Teleport>
 		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 			<div class="lg:col-span-2 space-y-6">
 				<Card>
@@ -128,6 +113,11 @@ const isDescriptionFocused = ref(false);
 
 useTaskDetailsWs(taskId);
 
+const { data: task, isLoading } = useQuery({
+	queryKey: ['task', taskId],
+	queryFn: () => TasksAPI.getTaskById(taskId),
+});
+
 const { mutate: patchTask } = useMutation({
 	mutationFn: (data: Partial<PatchTaskRequest>) => TasksAPI.patchTask(taskId, data),
 	onSuccess: (updatedTask) => queryClient.setQueryData(['task', taskId], updatedTask),
@@ -145,11 +135,6 @@ const { setValue: setDescription } = useDebouncedField({
 		description.value = newDescription;
 		patchTask({ description: newDescription });
 	},
-});
-
-const { data: task, isLoading } = useQuery({
-	queryKey: ['task', taskId],
-	queryFn: () => TasksAPI.getTaskById(taskId),
 });
 
 watch(task, (newTask: Task | undefined) => {

@@ -2,7 +2,10 @@
 	<Card class="w-84 shrink-0">
 		<template #content>
 			<div class="flex items-center justify-between mb-4">
-				<span class="font-semibold">Filters</span>
+                <div class="flex items-center gap-2">
+                    <span class="font-semibold">Filters</span>
+                    <ProgressSpinner v-if="props.isLoading" class="!w-4 !h-4" />
+                </div>
 				<div v-if="hasActiveFilters" class="cursor-pointer flex items-center gap-1" @click="clearFilters">
 					<span class="text-xs text-zinc-400 font-medium hover:text-zinc-200 transition-colors">Clear all</span>
 				</div>
@@ -92,6 +95,7 @@ import { taskPriorities } from '../constants/taskPriorities';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Card from 'primevue/card';
+import ProgressSpinner from 'primevue/progressspinner';
 
 export interface TaskFiltersModel {
 	title: string;
@@ -105,6 +109,7 @@ const props = defineProps<{
 	team?: Team;
 	boards?: Board[];
 	filters: TaskFiltersModel;
+    isLoading: boolean;
 }>();
 
 const emit = defineEmits<{

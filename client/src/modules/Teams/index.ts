@@ -38,4 +38,5 @@ export { default as TeamCardSkeleton } from './components/TeamCardSkeleton.vue';
 export { default as CreateTeamModal } from './components/CreateTeamModal.vue';
 export { default as CreateTaskModal } from './components/CreateTaskModal.vue';
 export { default as InviteUserModal } from './components/InviteUserModal.vue';
+export { default as TeamDetailsSkeleton } from './components/TeamDetailsSkeleton.vue'
 export { default as MainPanel } from './components/MainPanel.vue';
